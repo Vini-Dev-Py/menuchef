@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 120" role="img" aria-label="Rascunho do conceito Concha">
+  <title>Rascunho — Concha. Não é arte final.</title>
+  <rect width="440" height="120" fill="#FFFBF5"/>
+  <g fill="none" stroke="#C2410C" stroke-width="8" stroke-linecap="round">
+    <circle cx="48" cy="64" r="22"/>
+    <path d="M66 48 L98 28"/>
+  </g>
+  <text x="124" y="76" fill="#1C1917" font-family="system-ui, Segoe UI, Helvetica, Arial, sans-serif" font-size="40" font-weight="600">Menu Chef</text>
+</svg>

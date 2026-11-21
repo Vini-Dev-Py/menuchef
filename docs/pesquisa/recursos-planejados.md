@@ -12,23 +12,25 @@ Inventário do que o produto precisa ter, na linguagem de quem usa. Não há esp
 
 Perfil de quem usa:
 
-- **Empresa** é o dono ou gestor da loja.
-- **Funcionário** é quem confirma, produz, cobra ou despacha, com permissão menor que a do dono.
-- **Cliente** é quem pede.
-- **Administrador** é quem opera a plataforma Menu Chef, não o restaurante.
+- **Empresa** é o grupo que contrata o Menu Chef. Pode ter uma ou várias filiais.
+- **Funcionário** é quem confirma, produz, cobra ou despacha. O que essa pessoa pode fazer depende da empresa e da filial em que está naquele momento.
+- **Cliente** pede numa filial. Se a marca tem várias, escolhe a casa ou cai na que entrega no CEP dele.
+- **Administrador** opera a plataforma, com várias empresas no mesmo sistema, não o restaurante.
 
 ## 1. A empresa contrata o sistema
 
 | Recurso | Perfil | Classe | Nota |
 | --- | --- | --- | --- |
-| Cadastro da empresa com nome, documento e dados da loja | Empresa, Administrador | Essencial | Porta de entrada do fluxo |
-| Uma loja pronta para cadastrar cardápio, sem implantação obrigatória | Empresa | Essencial | Cardapex e Consumer mostram que a loja quer abrir e usar. Implantação assistida pode existir; não pode ser a única porta |
+| Cadastro da empresa e da primeira filial | Empresa, Administrador | Essencial | A empresa contrata; a filial é a casa que vende. Quem tem uma loja só não precisa entender a diferença no primeiro dia |
+| Uma filial pronta para cadastrar cardápio, sem implantação obrigatória | Empresa | Essencial | Cardapex e Consumer mostram que a loja quer abrir e usar. Implantação assistida pode existir; não pode ser a única porta |
 | Assinatura com preço, o que está incluso e o que é módulo, escritos antes de pagar | Empresa, Administrador | Essencial | A reclamação mais cara do mercado é cobrança diferente do combinado (Anota AI, Cardápio Web, Delivery Much) |
 | Cancelar a renovação por um caminho visível | Empresa | Essencial | “Não consigo cancelar” é categoria grande na Anota AI, na Saipos e na Goomer |
 | Teste ou começo sem fidelidade longa | Empresa | Desejável | Goomer, Consumer e InstaDelivery usam isso para a loja experimentar. O formato (dias ou teto) fica para a oferta, não para este inventário |
-| Mais de uma loja na mesma conta | Empresa, Administrador | Diferencial | Neemo e Saipos atendem rede. Não é o primeiro restaurante do fluxo |
+| Várias empresas na plataforma e várias filiais na empresa | Empresa, Administrador | Essencial | Pedido do dono. O detalhe está na seção Empresas, filiais e troca de contexto |
 
 ## 2. A empresa cadastra o cardápio
+
+O cardápio que o cliente vê é o da filial: preço, item esgotado e adicional disponível mudam de casa para casa. A empresa pode guardar um catálogo-base para não recadastrar o mesmo prato em cada filial; isso está na seção de filiais, como desejável.
 
 | Recurso | Perfil | Classe | Nota |
 | --- | --- | --- | --- |
@@ -115,8 +117,9 @@ Perfil de quem usa:
 | Impressão por estação (cozinha, bar, copa) | Funcionário | Desejável | Goomer e InstaDelivery anunciam. Casa pequena vive com uma impressora |
 | Tela de cozinha no lugar do papel | Funcionário | Desejável | KDS é Saipos, Anota AI, Goomer no plano alto e Consumer no módulo mobile |
 | Modo escuro no painel da operação | Funcionário | Desejável | Goomer cita no tablet. Balcão à noite |
-| Permissões: quem cadastra cardápio, quem só opera pedido, quem vê financeiro | Empresa, Funcionário | Essencial | Pedido do dono |
-| Dashboard do dia e do período: pedidos, faturamento, ticket, entrega contra retirada, produtos mais pedidos | Empresa | Essencial | Pedido do dono. Saipos vai além (CMV, DRE). O essencial aqui é a operação, não o contábil |
+| Permissões por empresa e por filial: quem cadastra cardápio, quem só opera pedido, quem vê financeiro | Empresa, Funcionário | Essencial | Pedido do dono. O mesmo usuário pode ser dono numa empresa e só cozinha em outra |
+| Dashboard da filial: pedidos, faturamento, ticket, entrega contra retirada, produtos mais pedidos | Empresa | Essencial | Pedido do dono. Saipos vai além (CMV, DRE). O essencial aqui é a operação da filial aberta, não o contábil |
+| Dashboard consolidado das filiais | Empresa | Desejável | Saipos e Consumer já vendem a visão da rede. Vem depois do painel da filial |
 | Extrato do que foi pago online e do que falta repassar | Empresa | Essencial | Resposta direta às reclamações de repasse |
 | WhatsApp como aviso, não como comanda | Empresa, Cliente | Desejável | Manda link, status e “está pronto”. O pedido mora no painel |
 | Bot que só encaminha o cardápio e o status | Empresa | Diferencial | Anota AI automatiza a conversa inteira. O relato do Consumer mostra o robô que responde errado. Começar restrito é o diferencial |
@@ -162,16 +165,69 @@ Quem cuida do Menu Chef, não do restaurante.
 | Métricas da plataforma (lojas ativas, pedidos do dia, falhas de aviso) | Desejável | Operação da plataforma, não dashboard do restaurante |
 | Impersonar a loja sem deixar marca | Não entra | Contradiz o rastro de suporte. Não é recurso planejado |
 
+## Empresas, filiais e troca de contexto
+
+O dono descreveu a plataforma com várias empresas no mesmo sistema. Cada empresa pode ter várias filiais. Cardápio, horário, frete por CEP, preço, disponibilidade e equipe podem mudar de filial para filial. A mesma pessoa pode estar em mais de uma empresa e em mais de uma filial, com um papel em cada vínculo, e trocar de empresa e de filial sem sair e entrar de novo.
+
+Isso não é desenho de banco. É a decisão de quem manda em cada coisa.
+
+### O que fica na empresa
+
+| Recurso | Classe | Nota |
+| --- | --- | --- |
+| Contrato, preço e fatura da assinatura do Menu Chef | Essencial | A empresa é quem contrata. A filial não tem uma assinatura paralela, salvo combinação comercial futura |
+| Nome do grupo e marca que as filiais herdam | Essencial | Uma bandeira só. A filial pode ajustar logo e cor do cardápio público se a casa tiver cara própria |
+| Lista de filiais e quem pode criar outra | Essencial | Sem isso “N filiais” não existe para o dono |
+| Pessoas e o papel de cada uma em cada filial | Essencial | O vínculo é da pessoa com a empresa e com a filial, não um login novo |
+| Cupom ou promoção da rede, valendo em todas ou em filiais escolhidas | Desejável | A filial continua podendo ter o cupom só dela, que já é essencial no fluxo |
+| Catálogo-base: o prato existe no grupo, a filial define preço e se está à venda | Desejável | O [MeuCardapio.ai](https://ajuda.meucardapio.ai/multi-loja/) separa cardápio compartilhado de cardápio da loja. Evita recadastrar o X-bacon cinco vezes, sem obrigar o mesmo preço |
+| Relatório consolidado das filiais | Desejável | Saipos e Consumer já mostram a rede numa tela |
+
+Documento, marca e pessoas nascem na empresa. O que muda na calçada daquela casa nasce na filial.
+
+### O que fica na filial
+
+| Recurso | Classe | Nota |
+| --- | --- | --- |
+| Endereço, telefone, link e QR Code | Essencial | O cliente precisa saber qual casa vai produzir |
+| Horário de funcionamento e pausa | Essencial | Uma filial pode fechar sem fechar o grupo |
+| Cardápio à venda, preços e adicionais disponíveis | Essencial | Pedido do dono. A Saipos, na página de franquias, empurra o preço único; o Menu Chef precisa do contrário quando a casa pedir |
+| Frete fixo ou por faixa de CEP, pedido mínimo e área | Essencial | O CEP de uma filial não serve para a outra |
+| Disponibilidade e, quando houver, estoque | Essencial | Acabou na unidade do centro, não acabou na da praia |
+| Equipe que opera aquela casa | Essencial | Quem confirma e quem despacha é da filial |
+| Fila, impressão, retirada e entrega | Essencial | O pedido não mistura duas cozinhas |
+| Extrato do pagamento online daquela unidade | Essencial | Se o recebimento for da filial. Se o grupo recebe tudo junto, o extrato consolidado fica na empresa e o detalhe ainda separa a filial |
+
+### Troca de contexto
+
+| Recurso | Perfil | Classe | Nota |
+| --- | --- | --- | --- |
+| Um acesso só para todas as empresas e filiais da pessoa | Funcionário, Empresa | Essencial | Pedido do dono |
+| Seletor de empresa e, dentro dela, de filial | Funcionário, Empresa | Essencial | Quem tem uma filial só não vê uma escolha inútil |
+| Ao trocar, mudam a fila, o cardápio, o frete e o que a pessoa pode fazer | Funcionário, Empresa | Essencial | O papel vem do vínculo, não de um segundo cadastro |
+| Trocar sem outra senha e sem abrir outro sistema | Funcionário, Empresa | Essencial | A ajuda da OlaClick faz o oposto: pede o e-mail da outra loja e abre outra guia, no máximo em quatro filiais |
+| Lembrar a última filial usada | Funcionário | Desejável | A pessoa volta para a cozinha em que estava |
+
+### O cliente diante de várias filiais
+
+| Recurso | Classe | Nota |
+| --- | --- | --- |
+| Cardápio, preço e frete da filial que vai produzir | Essencial | O cliente não vê um cardápio “da empresa” com frete de outra casa |
+| Link da filial, para quem divulga uma casa só | Essencial | Já está no fluxo |
+| Link da marca em que o CEP escolhe a filial | Desejável | O Consumer faz isso na página de franquias. O BeeFood lista as lojas num link só |
+
+Quem pede não troca de “contexto” como o funcionário. Escolhe onde comprar, ou o CEP escolhe por ele.
+
 ## Leitura por perfil
 
-**Empresa.** Contrata, monta cardápio, define frete, cupom, promoção, horário e pausa, vê dashboard, extrato e histórico agregado, define o que o funcionário pode fazer.
+**Empresa.** Contrata o grupo, abre filiais, convida pessoas e define o papel de cada uma em cada casa. Pode herdar um catálogo-base e ainda assim deixar preço, frete, horário e pausa na filial. Vê o dashboard da filial aberta e, quando existir, o consolidado.
 
-**Funcionário.** Vive da etapa 7 e da etapa 8: alerta, confirmar, produzir, imprimir, avisar pronto, separar retirada e despacho. Não mexe em preço nem em assinatura, salvo permissão.
+**Funcionário.** Entra uma vez. Se estiver em mais de uma casa, troca de empresa e de filial sem sair. Na filial atual, confirma, produz, imprime, avisa que está pronto e separa retirada de entrega. Não mexe em preço nem em assinatura, salvo o papel daquele vínculo.
 
-**Cliente.** Vê o cardápio, monta a sacola, escolhe entrega ou retirada e como pagar, fecha, acompanha, cancela antes da confirmação, consulta o histórico e pode avaliar.
+**Cliente.** Vê o cardápio da filial, monta a sacola, escolhe entrega ou retirada e como pagar, fecha, acompanha, cancela antes da confirmação, consulta o histórico e pode avaliar.
 
-**Administrador.** Cuida de empresas, planos e suporte. Não opera o pedido do restaurante no lugar da cozinha.
+**Administrador.** Vê as empresas do sistema, o estado de cada uma e, no suporte, a filial em que o problema aconteceu. Não opera o pedido no lugar da cozinha. O acesso de suporte continua com rastro.
 
 ## O que este inventário não é
 
-Não escolhe fornecedor de pagamento, não desenha tela, não define banco e não ordena sprints. A ordem implícita é só a do fluxo: sem cardápio não há sacola; sem confirmação não há produção; sem aviso de pronto a retirada e a entrega não existem. Fidelidade, fiscal, estoque, marketplace e totem ficam de fora desse núcleo de propósito.
+Não escolhe fornecedor de pagamento, não desenha tela, não define banco e não ordena sprints. “Várias empresas no mesmo sistema” é regra de produto, não modelo de dados. A ordem implícita do pedido continua a mesma: sem cardápio da filial não há sacola; sem confirmação não há produção; sem aviso de pronto a retirada e a entrega não existem. Fidelidade, fiscal, estoque avançado, marketplace e totem ficam de fora desse núcleo.

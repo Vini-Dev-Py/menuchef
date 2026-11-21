@@ -139,6 +139,8 @@ Ordem pelo fluxo que o dono descreveu, não por moda.
 
 12. **Extrato de repasse, se houver pagamento online.** Data, pedido e valor. As reclamações de Aiqfome, Anota AI e Cardápio Web são sobre dinheiro invisível, não sobre cor de botão.
 
+13. **Uma pessoa, várias empresas e filiais, sem segundo login.** O dono pediu a plataforma com várias empresas, cada uma com filiais, e a mesma pessoa em mais de uma casa, com papel diferente, trocando sem sair. O mercado cobre pedaços disso e erra o miolo. A Saipos centraliza a rede e o Multi CNPJ numa conta, e a [página de franquias](https://saipos.com/sistema/franquias) trata preço diferente entre lojas como erro a corrigir. O Consumer encaminha o cliente pelo CEP e dá acesso de consultor a unidades escolhidas ([franquias](https://consumer.com.br/sistema-de-gestao-para-franquias)). A OlaClick chega a quatro filiais pedindo outra senha e abrindo outra guia ([ajuda](https://help.olaclick.com/pt-br/help/gerencie-at%C3%A9-4-filiais-com-mais-controle)). Cardapex, Goomer no plano comum, InstaDelivery e a central de planos da Cardápio Web não documentam a troca. Quem documenta preço, horário e frete por loja no mesmo login são cardápios menores: [Delivery Studio](https://www.deliverystudio.com.br/recursos/multi-loja), [MeuCardapio.ai](https://ajuda.meucardapio.ai/multi-loja/) e o link de lojas do [BeeFood](https://ajuda.beefood.com.br/link-multilojas). Nenhum deles descreve a mesma pessoa em empresas diferentes, com permissão diferente em cada uma. Esse é o diferencial: o contexto muda, o acesso não.
+
 ## O que não vale copiar
 
 - Jogar a operação inteira no WhatsApp (Cardapex).
@@ -148,6 +150,8 @@ Ordem pelo fluxo que o dono descreveu, não por moda.
 - KDS, fiscal, estoque avançado e cinco marketplaces como obrigação do primeiro uso (é o território da Saipos, e a reclamação chama o sistema de engessado).
 - Suporte que só existe como robô e desaparece no cancelamento (padrão Anota AI e parte dos relatos de iFood no lado do cliente).
 - QR Code de mesa vendido como se fosse outro produto, sem avisar no preço do delivery (Goomer soma R$ 70 ou R$ 99,90). Pode ser módulo. Não pode ser surpresa.
+- Tratar filial como outro login. A ajuda da OlaClick pede e-mail e senha da segunda loja e abre outra guia.
+- Obrigar o mesmo preço em toda a rede. A página de franquias da Saipos vende isso. Filial com outro CEP e outro custo precisa poder cobrar diferente.
 
 ## Diferenciais que a pesquisa sugere, sem inventar pedido
 

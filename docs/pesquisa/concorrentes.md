@@ -11,20 +11,25 @@ Preço de software muda com promoção, cidade e negociação. O que está abaix
 - **Reclamação recorrente** é padrão visto em mais de um relato ou em categoria grande do Reclame Aqui. Um caso isolado não vira regra.
 - **Não confirmado** significa que a página consultada não falou do assunto.
 
-## Cardaplex
+## Cardapex
 
-Não foi encontrado produto, site, aplicativo ou página do Reclame Aqui com o nome exato **Cardaplex**.
+Cardápio digital citado pelo dono do Menu Chef como exemplo de interação ruim. A home descreve o pedido saindo do cardápio e caindo no WhatsApp. Sede em Bauru/SP. A home fala em mais de 6.500 estabelecimentos; o número não foi auditado.
 
-Buscas por `"Cardaplex"` e por `cardaplex cardápio` devolveram outros produtos de nome parecido. Eles não são tratados aqui como se fossem o Cardaplex:
+**O que é.** Site de pedidos da própria casa, com gestor. O cliente não instala aplicativo. A FAQ diz que funciona em qualquer dispositivo.
 
-| Nome encontrado | O que a página diz | Preço visto | Fonte |
-| --- | --- | --- | --- |
-| Cardapex | Cardápio digital; o pedido chega detalhado no WhatsApp e também há gestor de pedidos | R$ 99,00 por mês na página de revenda. A home não publica a tabela | [cardapex.com.br](https://www.cardapex.com.br/), [parcerias](https://www.cardapex.com.br/parcerias) |
-| Cardaply | Canal próprio de delivery e mesa, sem comissão da plataforma por pedido | R$ 99,00 por mês depois de 30 dias grátis | [cardaply.com.br](https://www.cardaply.com.br/) |
-| CardapX | Cardápio online para pizzaria, hamburgueria e lanchonete | R$ 19,90 no plano mensal e R$ 197,00 no anual, na página consultada | [cardapx.com.br](https://cardapx.com.br/) |
-| Cardapro | Cardápio, PDV, KDS, bot de WhatsApp e app de entregador; diz não cobrar taxa por pedido | Preço não estava na página inicial consultada | [site.cardapro.com.br](https://site.cardapro.com.br/) |
+**Público.** Qualquer comércio com entrega ou retirada: restaurante, pizzaria, padaria, marmitaria, adega, e também floricultura e papelaria. Não é exclusivo de comida.
 
-O Cardapex é o mais próximo do nome e entra com ficha própria no fim deste arquivo, porque a home descreve um modelo que o dono do Menu Chef apontou como problema: o pedido “cai no WhatsApp”. Não há ficha do Cardapex no Reclame Aqui nos resultados desta pesquisa.
+**Cobrança.** A home diz que não há comissão nem fidelidade. O valor da mensalidade **não** está na FAQ. A [página de revenda](https://www.cardapex.com.br/parcerias) diz que o cliente paga R$ 99,00 por mês (“menos de R$ 3,30 ao dia”). Não foi achada taxa de Pix. Um post do InstaDelivery de 24/12/2021 diz que o teste grátis durava 30 dias; a home atual não repetiu esse prazo no trecho lido.
+
+**Recursos na home e na FAQ.** Gestor, QR Code, WhatsApp, área de entrega, URL própria ou subdomínio, suporte, venda cruzada (sugestão de acompanhamento), pagamento online, cupom, pedido mínimo, impressão em um clique, pixel de Facebook e Google Ads.
+
+**Várias unidades.** As páginas lidas não falam de filiais, de um usuário em mais de uma loja nem de troca de contexto.
+
+**UX.** A loja configura sozinha, ou pede a personalização em até 5 dias úteis. O ponto fraco, para uma cozinha no pico, é o WhatsApp como destino do pedido: conversa, áudio e pedido novo dividem o mesmo aplicativo. A home trata isso como vantagem.
+
+**Reclamações.** Não há ficha do Cardapex no Reclame Aqui nos resultados desta pesquisa. Não há base pública, aqui, para listar reclamação recorrente.
+
+Fontes: [home](https://www.cardapex.com.br/), [sem taxas](https://www.cardapex.com.br/recursos/sem-taxas), [suporte](https://www.cardapex.com.br/recursos/central-de-suporte), [parcerias](https://www.cardapex.com.br/parcerias).
 
 ## Consumer (Programa Consumer) e MenuDino
 
@@ -57,13 +62,15 @@ Há divergência dentro do próprio site sobre o grátis. A página [cardápio d
 
 **Recursos que as páginas confirmam.** Cardápio no navegador, sem app para o cliente. Link, QR Code e WhatsApp. Categorias, fotos, preço e complementos. Pedido cai no computador e pode sair na impressora com observações. Cupom, cashback, Pix, cartão, taxa de entrega por km, bairro ou faixa de CEP, agendamento, status do pedido, tamanho e meio a meio, compra com nome e telefone sem conta. PDV, NFC-e, estoque por ficha técnica, comanda de garçom, totem e TEF nos planos mais altos. A página de criação de cardápio também anuncia integração com iFood, Keeta e 99Food. A ajuda lista, nos limites do MenuDino, até 200 itens, até 5 taxas de entrega e até 50 CEPs por taxa.
 
+**Várias unidades.** A [página de franquias](https://consumer.com.br/sistema-de-gestao-para-franquias) descreve rede com desempenho por unidade, cardápio online em cada loja, consultor com acesso a unidades escolhidas e o cliente encaminhado pelo CEP à franquia mais próxima. A [lista de recursos](https://consumer.com.br/recursos) inclui “Gestão de rede e franquias” e “Administração de várias lojas”. Não foi lida uma descrição da mesma pessoa com papéis diferentes em empresas distintas, trocando de contexto sem outro login.
+
 **UX que se destaca.** O caminho do pedido é curto e visível: o cliente pede no celular, o pedido aparece no computador, a cozinha imprime complemento e observação. Ninguém reinstala app para ver o cardápio. Dá para fechar sem criar conta. O status muda para o cliente. Isso combina com o que o dono do Menu Chef citou como boa interação.
 
 **Reclamações de lojistas.** No Reclame Aqui, reputação **Boa**, 75% das reclamações resolvidas na página consultada ([empresa/consumer1](https://www.reclameaqui.com.br/empresa/consumer1/)). Relatos recentes na mesma página: suporte do aplicativo parado há mais de um mês (04/11/2026); bot de WhatsApp respondendo errado e derrubando venda (28/10/2026); totem que nunca funcionou (28/10/2026); mensalidade reajustada em 40% de um mês para o outro (21/10/2026); discussão de multa de 20% para encerrar contrato (09/10/2026).
 
 **Reclamações de clientes finais.** Não foi encontrada uma ficha de marketplace. O cliente final quase não “usa o Consumer”; usa o cardápio do restaurante. Não há, nesta pesquisa, série de reviews da Play Store do cardápio.
 
-Fontes: [consumer.com.br/cardapio-digital](https://consumer.com.br/cardapio-digital), [criar cardápio](https://consumer.com.br/criar-cardapio-online-gratis), [preço](https://consumer.com.br/preco-sistema-restaurante), [frente de caixa](https://consumer.com.br/sistema-frente-de-caixa), [loja](https://loja.consumer.com.br/), [comparar MenuDino](https://loja.consumer.com.br/home/compare-menudino), [ajuda](https://ajuda.programaconsumer.com.br/como-funciona-a-contratacao-do-programa-consumer/), [Reclame Aqui](https://www.reclameaqui.com.br/empresa/consumer1/).
+Fontes: [consumer.com.br/cardapio-digital](https://consumer.com.br/cardapio-digital), [criar cardápio](https://consumer.com.br/criar-cardapio-online-gratis), [preço](https://consumer.com.br/preco-sistema-restaurante), [frente de caixa](https://consumer.com.br/sistema-frente-de-caixa), [franquias](https://consumer.com.br/sistema-de-gestao-para-franquias), [recursos](https://consumer.com.br/recursos), [loja](https://loja.consumer.com.br/), [comparar MenuDino](https://loja.consumer.com.br/home/compare-menudino), [ajuda](https://ajuda.programaconsumer.com.br/como-funciona-a-contratacao-do-programa-consumer/), [Reclame Aqui](https://www.reclameaqui.com.br/empresa/consumer1/).
 
 ## Saipos
 
@@ -75,6 +82,8 @@ Sistema de gestão em nuvem para restaurante, pizzaria, hamburgueria, delivery e
 
 **Recursos confirmados nas páginas oficiais.** Pedidos de balcão, mesa e delivery. App do garçom, QR Code, KDS, site de delivery, impressão, estoque com ficha técnica e baixa automática, CMV, DRE, fluxo de caixa, NFC-e e CF-e SAT/MFE. NF-e (modelo 55) é importada, não emitida. Integração com iFood, 99 Food, Rappi e Keeta. Balança, maquininha, API pública. Relatórios de cupom, item vendido, tempo por status no KDS, área de entrega e desempenho de garçom. “Acelerador de Avaliações” para estimular nota no app de delivery.
 
+**Várias unidades.** O [dashboard de franquias](https://saipos.com/sistema/restaurante/dashboard-de-franquias-para-restaurante) tem visão conjunta e por loja. A [página de franquias](https://saipos.com/sistema/franquias) vende cardápio centralizado, com atualização de preço e produto na rede ao mesmo tempo, e trata preço diferente entre pontos como problema a eliminar. O [Multi CNPJ](https://saipos.com/sistema/multi-cnpj) põe várias lojas numa conta só, com a frase “não fique mais pulando de conta em conta”, e escolhe qual CNPJ emite a nota. O [app de gestão](https://saipos.com/sistema/app-de-gestao) filtra uma unidade ou a rede. Papel diferente da mesma pessoa em cada filial não foi descrito.
+
 Há duas frases difíceis de conciliar. A página de restaurante diz que basta navegador em computador, tablet ou celular, sem servidor. A FAQ diz que é preciso computador com Windows 8 ou superior e impressora de pedidos. As duas estão no ar.
 
 **UX que se destaca.** Um kanban da operação e uma tela só para pedidos de vários marketplaces. A cozinha vê tempo de preparo no KDS. O dono vê lucro por prato (CMV) e por canal (DRE) sem remontar planilha. É o tipo de interação “a casa inteira no mesmo quadro” que o dono do Menu Chef apontou como referência. O custo dessa abrangência aparece nas reclamações de sistema rígido.
@@ -83,7 +92,7 @@ Há duas frases difíceis de conciliar. A página de restaurante diz que basta n
 
 **Reclamações de clientes finais.** Não se aplica como app de consumidor. Não foi achada ficha de cliente final.
 
-Fontes: [saipos.com/sistema/restaurante](https://saipos.com/sistema/restaurante), [planos](https://saipos.com/planos-e-precos), [como funciona](https://saipos.com/como-funciona), [perguntas](https://saipos.com/perguntas), [Reclame Aqui](https://www.reclameaqui.com.br/empresa/saipos/lista-reclamacoes/), [revenda VNDX](https://vndx.com.br/saipos).
+Fontes: [saipos.com/sistema/restaurante](https://saipos.com/sistema/restaurante), [planos](https://saipos.com/planos-e-precos), [como funciona](https://saipos.com/como-funciona), [perguntas](https://saipos.com/perguntas), [franquias](https://saipos.com/sistema/franquias), [Multi CNPJ](https://saipos.com/sistema/multi-cnpj), [dashboard de franquias](https://saipos.com/sistema/restaurante/dashboard-de-franquias-para-restaurante), [app de gestão](https://saipos.com/sistema/app-de-gestao), [Reclame Aqui](https://www.reclameaqui.com.br/empresa/saipos/lista-reclamacoes/), [revenda VNDX](https://vndx.com.br/saipos).
 
 ## Anota AI
 
@@ -102,7 +111,7 @@ Cardápio digital com robô de atendimento no WhatsApp, Facebook e Instagram, in
 
 Taxas de pagamento online, à parte, na [página de Pix e cartão](https://anota.ai/home/funcionalidade/pagamento-online-para-restaurante/): Pix 0,99% com repasse no dia útil seguinte; débito 1,99% no dia útil seguinte; crédito 3,49% em 30 dias, 4,49% em 7 dias úteis ou 4,69% no dia útil seguinte (as duas últimas mediante análise).
 
-**Recursos no plano.** Robô com IA, cardápio, QR de mesa, cupom, cashback, recuperador de quem abandonou o pedido, agendamento, PDV, frente de caixa (a página diz que a frente de caixa exige pagamento online ativo), app de garçom, KDS, cadastro de entregador, pixel de anúncio. NFC-e aparece na lista, com o aviso de confirmar requisito e cobrança com a Anota AI. Impressão de cozinha, frete por CEP e pausa de loja não foram confirmados nas páginas lidas.
+**Recursos no plano.** Robô com IA, cardápio, QR de mesa, cupom, cashback, recuperador de quem abandonou o pedido, agendamento, PDV, frente de caixa (a página diz que a frente de caixa exige pagamento online ativo), app de garçom, KDS, cadastro de entregador, pixel de anúncio. NFC-e aparece na lista, com o aviso de confirmar requisito e cobrança com a Anota AI. Impressão de cozinha, frete por CEP e pausa de loja não foram confirmados nas páginas lidas. Várias filiais também não aparecem nas páginas de plano. Um relato de novembro de 2026 na lista do Reclame Aqui fala em ativar o sistema numa segunda unidade, sem descrever troca de contexto.
 
 **UX que se destaca.** O cliente fala com o robô no aplicativo que já usa. O cardápio abre por link, sem instalação. Cupom e cashback estão no plano único, não num módulo escondido. O recuperador de venda ataca um furo real: a pessoa montou o pedido e não pagou.
 
@@ -133,6 +142,8 @@ QR Code soma R$ 70,00 por mês no Básico e no Automatizar, e R$ 99,90 no Integr
 
 No QR Code, mesa, comanda, chamar garçom, pizza de dois sabores, fechar a conta, rótulos (sem glúten, vegetariano), modo escuro e tradução aparecem nos planos mais altos, não no cardápio de entrada. A página de tablet lista esses itens no Integrar.
 
+**Várias unidades.** Acima de 10 lojas, ou faturamento acima de R$ 1 milhão por mês, a página de planos manda falar com consultor. Ela não descreve cardápio, horário, frete ou equipe por filial, nem um seletor de loja no painel.
+
 **UX que se destaca.** A comparação de planos é explícita: dá para ver o que o plano de baixo não tem. O cliente acompanha status. O restaurante programa o horário de um prato (almoço, um dia da semana, promoção relâmpago). Venda sugestiva e produto em destaque sobem o ticket sem o cliente falar com atendente. No salão, chamar garçom e fechar a conta estão no produto de mesa, não misturados com o delivery.
 
 **Reclamações de lojistas.** Reputação **Ótima**, nota 9,0 no agregado da página, 90,9% resolvidas, janela 01/05/2026 a 31/10/2026 ([lista Goomer](https://www.reclameaqui.com.br/empresa/goomer/lista-reclamacoes/)). A marcação schema da página cita 42 reclamações nesse retrato. As categorias exibidas incluem qualidade do serviço, mau atendimento, não consigo cancelar e cobrança indevida. Relatos de outubro e novembro de 2026: integração prometida que não funcionou; vendedor que some depois da venda e ausência de telefone; cardápio antigo que continua no Google; troca de CNPJ travada.
@@ -162,6 +173,8 @@ A FAQ do Reclame Aqui, assinada pela empresa, diz que trimestral, semestral e an
 **Recursos por plano.** Todos: balcão, caixa, impressão automática, usuários, clientes, estoque simples, fiado e disparo de WhatsApp. Mesas só em Mesas e Premium. Delivery, entregadores, campos personalizados, fidelidade, pagamento online, extensão de WhatsApp e chatbot só em Delivery e Premium.
 
 **UX que se destaca.** Dá para contratar só o que a casa faz (mesa ou delivery), em vez de pagar o pacote inteiro. Impressão automática entra até no plano de mesa. Fiado está no produto, coisa comum em lanchonete de bairro e rara nas páginas dos outros. O cardápio é web.
+
+**Várias unidades.** A [home](https://cardapioweb.com/) diz que o sistema serve desde quem começa em casa até “rede de franquia com centenas de lojas”. A central de planos lida não descreve filial, cardápio por unidade nem a mesma pessoa em várias lojas. O funcionamento ficou não confirmado.
 
 **Reclamações de lojistas.** Reputação **RA 1000**, cerca de 93,3% a 93,4% resolvidas, janela 01/05/2026 a 31/10/2026 ([ficha](https://www.reclameaqui.com.br/empresa/cardapio-web-servicos-de-tecnologia/), [lista](https://www.reclameaqui.com.br/empresa/cardapio-web-servicos-de-tecnologia/lista-reclamacoes/)). A página de reputação aponta mau atendimento como problema mais citado (18,64% na visão que ela mostra). A lista geral marca mau atendimento (74), estorno (33), demora (30), baixa qualidade (27) e cobrança indevida (25). Relatos de outubro e novembro de 2026: suporte só por WhatsApp e sem telefone; treinamento que não veio depois da implantação; instabilidade diária; repasse parado por titularidade alterada errada; autoatendimento com balança vendido e depois informado como indisponível. A própria empresa publicou aviso de instabilidade na integração com o iFood.
 
@@ -213,7 +226,7 @@ Plataforma de delivery com site (e, em planos antigos, aplicativo com a marca do
 
 O Menuthere (checagem datada de 26/09/2026 no texto deles) ainda cita fidelidade opcional a R$ 29,90 por mês nos planos de entrada e taxa de implantação sob consulta. Um post antigo do InstaDelivery (31/07/2021) fala em R$ 189 e R$ 289 com outros nomes de plano. São três épocas. Nada disso substitui um orçamento Linx de hoje.
 
-**Recursos atribuídos pelas fontes secundárias.** Site personalizado, app Android e iOS com a marca, chatbot de WhatsApp, QR de mesa, gestor único, impressão pelo Neemo Connect, cupom, fidelidade, campanha de aniversário e reativação, push, e-mail e SMS. Pagamento online pela adquirente do restaurante ou pelo pagamento da própria plataforma; a taxa não foi publicada.
+**Recursos atribuídos pelas fontes secundárias.** Site personalizado, app Android e iOS com a marca, chatbot de WhatsApp, QR de mesa, gestor único, impressão pelo Neemo Connect, cupom, fidelidade, campanha de aniversário e reativação, push, e-mail e SMS. Pagamento online pela adquirente do restaurante ou pelo pagamento da própria plataforma; a taxa não foi publicada. O plano Franquia, nas mesmas fontes secundárias, encaminha o pedido à loja mais próxima. O site atual da Linx não confirmou isso nesta pesquisa.
 
 **UX.** Várias portas (site, app, WhatsApp, mesa, telefone) e uma fila só. Isso é o que as páginas descrevem; não houve teste de uso nesta pesquisa.
 
@@ -304,29 +317,13 @@ Nessa mesma página, o Advanced aparece com “400 pedidos por mês”. Um artig
 
 **Recursos citados.** PDV, cardápio digital e CRM em todos os planos da página de restaurantes. WhatsApp, QR Code, delivery, retirada e mesa. Pagamento online com Visa, Mastercard, Amex e Pix. Nota fiscal marcada como complemento em parte da grade. Chatbot com IA redistribuído em mais planos em 2026, segundo a central de ajuda. Gerenciamento de entregas no Advanced.
 
+**Várias unidades.** A [página de franquias](https://olaclick.com/sistema/franquias/) vende cardápio e relatório centralizados, e a pergunta publicada nessa página diz que dá para padronizar o cardápio e ajustar o preço por unidade. A [ajuda](https://help.olaclick.com/pt-br/help/gerencie-at%C3%A9-4-filiais-com-mais-controle) limita a quatro filiais: a pessoa informa e-mail e senha da outra loja, e a filial abre em outra guia do navegador. É troca de loja com um segundo acesso, não a mesma pessoa com um papel diferente em cada casa.
+
 **UX.** Pedido sem instalar app, cardápio atualizado na hora, mesma base para mesa e delivery. A grade de preço confusa é, ela mesma, um problema de experiência de compra.
 
 **Reclamações.** Não foi encontrada ficha brasileira do OlaClick no Reclame Aqui nesta busca.
 
-Fontes: [cardápio para restaurantes](https://olaclick.com/cardapio-para-restaurantes/), [mudança de planos](https://help.olaclick.com/pt-br/help/novosplanos-olaclick2026), [sistema de delivery](https://olaclick.com/sistema-de-delivery-para-restaurante-e-entregadores/), [página de sistema](https://olaclick.com/sistema/).
-
-## Cardapex
-
-Incluído porque a busca pelo Cardaplex caiu aqui e porque o modelo (pedido completo no WhatsApp) é exatamente o tipo de ferramenta que o dono do Menu Chef tratou como exemplo ruim de interação.
-
-**O que é.** Cardápio digital com site próprio. A home diz que o pedido feito no cardápio chega no WhatsApp, detalhado, e que existe gestor de pedidos. Sede em Bauru/SP. A home fala em mais de 6.500 estabelecimentos; o número não foi auditado.
-
-**Público.** Qualquer comércio com entrega ou retirada: restaurante, pizzaria, padaria, marmitaria, adega, e também floricultura e papelaria. Não é exclusivo de comida.
-
-**Cobrança.** A home diz que não há comissão nem fidelidade. O valor da mensalidade **não** está na FAQ. A [página de revenda](https://www.cardapex.com.br/parcerias) diz que o cliente paga R$ 99,00 por mês (“menos de R$ 3,30 ao dia”). Não foi achada taxa de Pix. Um post do InstaDelivery de 24/12/2021 diz que o teste grátis do Cardapex durava 30 dias; a home atual não repetiu esse prazo no trecho lido.
-
-**Recursos na home e na FAQ.** Gestor, QR Code, WhatsApp, área de entrega, URL própria ou subdomínio, suporte, venda cruzada (sugestão de acompanhamento), pagamento online, cupom, pedido mínimo, impressão em um clique, pixel de Facebook e Google Ads. O cliente não instala app. Funciona em qualquer dispositivo, segundo a FAQ.
-
-**UX.** O cardápio é web e a loja configura sozinha, ou pede a personalização em até 5 dias úteis. O ponto fraco de interação, para uma cozinha no pico, é depender do WhatsApp como destino do pedido: conversa, áudio e pedido novo dividem o mesmo aplicativo. A home trata isso como vantagem.
-
-**Reclamações.** Não foi encontrada ficha no Reclame Aqui. Não há base pública, nesta pesquisa, para listar reclamação recorrente.
-
-Fontes: [home](https://www.cardapex.com.br/), [sem taxas](https://www.cardapex.com.br/recursos/sem-taxas), [suporte](https://www.cardapex.com.br/recursos/central-de-suporte), [parcerias](https://www.cardapex.com.br/parcerias).
+Fontes: [cardápio para restaurantes](https://olaclick.com/cardapio-para-restaurantes/), [franquias](https://olaclick.com/sistema/franquias/), [até 4 filiais](https://help.olaclick.com/pt-br/help/gerencie-at%C3%A9-4-filiais-com-mais-controle), [mudança de planos](https://help.olaclick.com/pt-br/help/novosplanos-olaclick2026), [sistema de delivery](https://olaclick.com/sistema-de-delivery-para-restaurante-e-entregadores/), [página de sistema](https://olaclick.com/sistema/).
 
 ## O que ficou de fora de propósito
 

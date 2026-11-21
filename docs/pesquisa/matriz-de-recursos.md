@@ -12,7 +12,7 @@ Comparação do que as fontes públicas afirmam. A leitura de cada célula está
 | Não | A fonte marca ausência, ou o produto é outro e não oferece isso |
 | Não confirmado | As páginas lidas não dizem |
 
-Consumer e MenuDino estão na mesma coluna. Neemo usa o que fontes secundárias ainda publicam; o site atual não confirmou a tabela. Cardaplex não entra: o produto não foi encontrado. Cardapex entra no lugar do nome parecido.
+Consumer e MenuDino estão na mesma coluna. Neemo usa o que fontes secundárias ainda publicam; o site atual não confirmou a tabela. Cardapex é o cardápio citado pelo dono.
 
 Marketplace (iFood, Delivery Much, Aiqfome) não é cardápio da marca do restaurante. Várias células “Não” deles significam “não é esse produto”, não “o app é ruim nisso”.
 
@@ -114,6 +114,19 @@ Fiscal da Anota AI está anunciado com o recado de confirmar cobrança. Por isso
 | Mensalidade publicada | Sim | A partir de R$ 240,79 | R$ 99,99 a R$ 299,99 | R$ 0 a R$ 299,90 | R$ 169,99 a R$ 269,99 | R$ 110 ou R$ 150 acima de R$ 1.800 | Não publicada hoje | Negociada | R$ 89,90 | R$ 0, R$ 69,90 ou R$ 129,90 | R$ 64 a R$ 928 no anual | R$ 99 na página de revenda |
 | Comissão por pedido | Não | Não | Não | Não no pago; R$ 1,39 acima de 30 no grátis | Não | 12% ou 23% | Não, nas fontes antigas | Sim, percentual da praça | 14,99% ou 19,99% | Não | Não | Não |
 | Módulo importante cobrado à parte | Totem, TEF, disparo, gerente | Bot, CRM, roteirização, app do entregador | Taxa de pagamento | QR Code, e no Integrar a logística iFood | Fiscal, financeiro, entregas, estoque, marketplace, totem, TEF | Plano Entrega é outra comissão | Fidelidade, nas fontes antigas | Taxa de pagamento online | Não confirmado | Pagamento online 2,99% | Nota fiscal em parte da grade | Não confirmado |
+
+## Empresa, filial e mais de uma casa
+
+Leitura complementar em [concorrentes.md](concorrentes.md). “Sim” aqui não significa que o preço, o frete e a equipe variam por filial: em vários casos a página só promete visão da rede.
+
+| Recurso | Consumer | Saipos | Anota AI | Goomer | Cardápio Web | iFood | Neemo | Delivery Much | Aiqfome | InstaDelivery | OlaClick | Cardapex |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Várias unidades da mesma marca | Sim | Sim | Não confirmado | Sob consulta, acima de 10 lojas | A home cita rede; o recurso não está na central de planos | Não confirmado | Fonte secundária (plano Franquia) | Não confirmado | Não confirmado | Não confirmado | Sim | Não confirmado |
+| Preço, cardápio ou frete diferentes por unidade | CEP escolhe a unidade; preço por loja não confirmado | A página de franquias vende preço igual na rede | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Loja mais próxima, em fonte secundária | Não confirmado | Não confirmado | Não confirmado | Preço por unidade, na página de franquias | Não confirmado |
+| Uma conta, sem pular de login | Não confirmado | Sim (Multi CNPJ) | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Parcial: até 4 filiais, com outra senha e outra guia | Não confirmado |
+| Papel diferente da mesma pessoa em cada casa | Acesso de consultor a unidades escolhidas; papel diferente não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não confirmado | Não | Não confirmado |
+
+Fora desta grade, três cardápios menores documentam o que a grade grande deixa vago. O [Delivery Studio](https://www.deliverystudio.com.br/recursos/multi-loja) diz que produto, preço, taxa e horário são de cada loja, no mesmo login, e que a equipe entra com o próprio usuário. O [MeuCardapio.ai](https://ajuda.meucardapio.ai/multi-loja/) separa rede (cardápio compartilhado ou independente, preço da loja) de franquia (cardápio padronizado). O [BeeFood](https://ajuda.beefood.com.br/link-multilojas) junta os cardápios num link só, e o cliente escolhe a loja. Nenhum dos três descreve a mesma pessoa em empresas diferentes, com permissão diferente em cada uma.
 
 ## Como usar esta matriz
 
