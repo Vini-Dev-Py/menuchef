@@ -9,7 +9,7 @@
 | [lacunas-e-oportunidades.md](lacunas-e-oportunidades.md) | O que lojista e cliente pedem, com o link do relato, e o que isso sugere para o Menu Chef |
 | [recursos-planejados.md](recursos-planejados.md) | Inventário pelo fluxo do pedido e pelo perfil, em essencial, desejável e diferencial |
 | [cores-e-paletas.md](cores-e-paletas.md) | Cor em food service, cores dos concorrentes, quatro paletas com contraste e a recomendação |
-| [logo.md](logo.md) | Diretriz do logo e quatro conceitos; rascunhos em [logos/](logos/) |
+| [logo.md](logo.md) | Decisão Concha com vapor, diretriz e o histórico dos outros conceitos |
 
 ## Resumo
 
@@ -27,4 +27,4 @@ A oportunidade do Menu Chef é o fluxo inteiro com nome claro: a casa contrata, 
 
 A paleta recomendada é a **Brasa clara**: primária `#C2410C`, fundo `#FFFBF5`, texto `#1C1917`, destaque `#F59E0B` só com texto escuro. É comida, não o azul dos sistemas nem o vermelho `#EA1D2C` do iFood. Os pares principais passam do contraste AA (texto no creme 16,96:1, branco no botão 5,18:1). Status usa verde, âmbar, vermelho e azul, sempre com palavra, e há versão escura para a cozinha à noite. O cardápio de cada restaurante pode vestir a marca da casa; o painel permanece na Brasa para “pronto” não mudar de cor a cada loja.
 
-O logo recomendado é a **Concha**: tigela e cabo curto em `#C2410C`, nome “Menu Chef” em sem serifa média. No escuro a concha vai para `#FB923C`, porque o laranja principal sobre o fundo escuro fica em 3,51:1. Os desenhos na pasta `logos/` são rascunho.
+O logo escolhido em 21/11/2026 é a **Concha com vapor**: tigela preenchida em `#C2410C`, cabo para baixo à esquerda, e vapor que forma um m minúsculo. O nome “Menu Chef” é sem serifa humanista semibold, `#1C1917` no creme e `#FAF6F1` no escuro. No escuro o símbolo usa `#FB923C`, porque `#C2410C` sobre `#1C1410` fica em 3,51:1. O ícone leva só o símbolo. A referência está em `docs/pesquisa/logos/concha-vapor.jpg` e não é arte final: em 16 px o vapor precisa sumir ou sobrar só o m, para não parecer chama.

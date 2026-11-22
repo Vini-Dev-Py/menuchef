@@ -2,7 +2,32 @@
 
 Diretriz de marca da plataforma, não do cardápio de cada restaurante. A casa continua com o próprio logo no cardápio público, como já está em [cores-e-paletas.md](cores-e-paletas.md). O logo descrito aqui é o do Menu Chef: painel, site, ícone do aplicativo e favicon.
 
-Os desenhos em [logos/](logos/) são rascunhos. Servem para comparar a ideia. Não são arte final, não têm traço de impressão e a fonte do arquivo é um substituto do sistema, não a fonte escolhida.
+A decisão está no topo. Os quatro conceitos seguintes ficam como histórico. Os SVG em [logos/](logos/) são rascunhos anteriores. Não são arte final, e a fonte deles é um substituto do sistema.
+
+## Decisão: Concha com vapor
+
+Escolha do dono em **21 de novembro de 2026**. É uma evolução do conceito Concha: a tigela continua, e o vapor entra para escrever um m.
+
+![Referência visual da Concha com vapor, não é arte final](logos/concha-vapor.jpg)
+
+O quadro acima mostra a referência do conceito: versão clara, versão escura e o símbolo sozinho no ícone. Não é arte final. A imagem anexada na conversa não estava disponível como arquivo neste ambiente; o JPEG reproduz o mesmo arranjo e as cores pedidas. A letra do quadro é Noto Sans Bold, só para segurar o nome no lugar. A arte final usa sem serifa humanista semibold, não essa fonte de sistema.
+
+**Símbolo.** Concha de cozinha. A tigela é redonda e preenchida em `#C2410C`, com o miolo na cor do fundo, para se ler como vasilha e não como mancha. O cabo sai para baixo, à esquerda, curto e com ponta redonda. Da tigela sobem curvas de vapor, no mesmo laranja, que juntas formam um **m** minúsculo. O m liga o desenho à palavra Menu. Não é chama, não é coroa e não tem rosto.
+
+**Lettering.** “Menu Chef”, caixa alta e baixa, sem serifa humanista, peso semibold. No claro, `#1C1917` sobre `#FFFBF5`. No escuro, `#FAF6F1` sobre `#1C1410`. As duas palavras no mesmo peso. “Menu” leva acento.
+
+**Cores do símbolo.** No claro, `#C2410C`. No escuro, `#FB923C`. O `#C2410C` sobre `#1C1410` fica em 3,51:1, pouco para o desenho pequeno. O `#FB923C` sobre o mesmo fundo fica em 8,02:1. O nome no creme fica em 16,96:1. O nome no escuro fica em 16,87:1. O amarelo `#F59E0B` não entra no logo.
+
+**Versões.** Horizontal: símbolo à esquerda, nome à direita, alinhados pelo centro, como no quadro. Ícone de aplicativo e favicon: só o símbolo, sem o nome. Monocromática: o mesmo desenho em `#1C1917` sobre claro, ou em `#FAF6F1` sobre escuro.
+
+**Cuidados para a arte final.**
+
+- Em 16 px o vapor some ou vira ruído. Nesse tamanho, o símbolo fica só a concha, ou só o m se ele ainda se ler como letra. Não manter as três curvas se elas virarem três riscos.
+- O m precisa continuar letra. Se o traço engrossar ou ganhar ponta, parece chama, coroa ou o clichê de “comida quente”. Vapor é curva redonda, da mesma cor da tigela, sem fagulha e sem amarelo no meio.
+- O miolo da tigela usa a cor do fundo. Uma segunda cor dentro da vasilha vira outro símbolo.
+- Contraste AA nos pares acima. Não usar `#C2410C` em cima do fundo escuro.
+- O ícone leva só o símbolo. O nome não entra no favicon.
+- Não aproximar do sorriso do iFood, do robô da Anota AI, do g azul da Goomer, da letra balão da Saipos nem do fantasma do Aiqfome. A tabela mais abaixo continua valendo.
 
 ## O que o logo precisa aguentar
 
@@ -27,6 +52,10 @@ A paleta de trabalho é a **Brasa clara**. As outras paletas de [cores-e-paletas
 | Aiqfome | Fantasma com mordida e roxo, segundo o fundador em entrevista | Fantasma, mordida, roxo como cor da marca |
 
 Também ficam de fora o chapéu de chef com rosto, o garfo cruzado com a faca e a pimenta sorrindo. São ícones genéricos de “comida” e não separam o Menu Chef de um aplicativo de receita.
+
+## Histórico dos conceitos
+
+Estes quatro estudos vieram antes da escolha. A Concha simples é a origem da Concha com vapor. Dobra, Brasa e Tabuleta não foram escolhidos.
 
 ## Conceito 1. Concha
 
@@ -94,8 +123,6 @@ Rascunho: [logos/tabuleta.svg](logos/tabuleta.svg).
 
 ## Recomendação
 
-**Concha**, na paleta Brasa clara.
+A recomendação anterior, a Concha sem vapor, foi substituída em 21/11/2026 pela **Concha com vapor**, descrita no topo. Dobra, Brasa e Tabuleta ficam só no histórico.
 
-Ela é a única que continua sendo cozinha quando o nome não cabe, sem cair no chapéu, no sorriso, no robô ou no azul dos sistemas. O círculo com cabo curto ainda se lê em ícone. A Dobra explica “cardápio” melhor no papel e pior no favicon. A Brasa é mais fácil de desenhar e mais fácil de confundir com chama genérica. A Tabuleta parece pin de mapa.
-
-No claro: concha `#C2410C`, nome `#1C1917`, fundo `#FFFBF5`. No escuro: concha `#FB923C`, nome `#FAF6F1`, fundo `#1C1410`. Promoção e status não usam o logo; usam o amarelo, o verde, o âmbar, o vermelho e o azul já definidos nas cores.
+Promoção e status não usam o logo. Usam o amarelo, o verde, o âmbar, o vermelho e o azul já definidos nas cores.
