@@ -10,7 +10,7 @@ Escolha do dono em **21 de novembro de 2026**. É uma evolução do conceito Con
 
 ![Referência visual da Concha com vapor, não é arte final](logos/concha-vapor.jpg)
 
-O quadro acima mostra a referência do conceito: versão clara, versão escura e o símbolo sozinho no ícone. Não é arte final. A imagem anexada na conversa não estava disponível como arquivo neste ambiente; o JPEG reproduz o mesmo arranjo e as cores pedidas. A letra do quadro é Noto Sans Bold, só para segurar o nome no lugar. A arte final usa sem serifa humanista semibold, não essa fonte de sistema.
+O quadro acima é a referência visual escolhida pelo dono: versão clara, versão escura e o símbolo sozinho no ícone. Foi gerada por IA só como referência, não é arte final. A arte final usa sem serifa humanista semibold, nas cores descritas abaixo.
 
 **Símbolo.** Concha de cozinha. A tigela é redonda e preenchida em `#C2410C`, com o miolo na cor do fundo, para se ler como vasilha e não como mancha. O cabo sai para baixo, à esquerda, curto e com ponta redonda. Da tigela sobem curvas de vapor, no mesmo laranja, que juntas formam um **m** minúsculo. O m liga o desenho à palavra Menu. Não é chama, não é coroa e não tem rosto.
 
