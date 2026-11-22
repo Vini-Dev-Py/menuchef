@@ -10,6 +10,7 @@
 | [recursos-planejados.md](recursos-planejados.md) | Inventário pelo fluxo do pedido e pelo perfil, em essencial, desejável e diferencial |
 | [cores-e-paletas.md](cores-e-paletas.md) | Cor em food service, cores dos concorrentes, quatro paletas com contraste e a recomendação |
 | [logo.md](logo.md) | Decisão Concha com vapor, diretriz e o histórico dos outros conceitos |
+| [design/README.md](design/README.md) | Ideias de layout, bibliotecas, skills e protótipos das cinco áreas |
 
 ## Resumo
 

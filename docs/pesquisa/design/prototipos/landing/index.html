@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protótipo · Landing</title>
+  <style>
+    :root {
+      --primary: #C2410C;
+      --bg: #FFFBF5;
+      --text: #1C1917;
+      --secondary: #44403C;
+      --surface: #fff;
+      --line: #E7E0D6;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    main { max-width: 880px; margin: 0 auto; padding: 32px 16px 48px; }
+    h1 { font-size: 36px; line-height: 1.15; margin: 0 0 12px; }
+    .lead { font-size: 18px; color: var(--secondary); max-width: 42rem; }
+    a.cta { display: inline-flex; align-items: center; min-height: 44px; margin-top: 16px; background: var(--primary); color: #fff; text-decoration: none; border-radius: 999px; padding: 0 18px; }
+    ol { padding: 0; list-style: none; display: grid; gap: 10px; }
+    li { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+    @media (min-width: 800px) {
+      .split { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: center; }
+      .fake { background: var(--text); color: var(--bg); border-radius: 20px; padding: 16px; }
+      .fake span { display: block; background: #2A2420; border-radius: 10px; padding: 10px; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="split">
+      <div>
+        <h1>O pedido fica na cozinha, não no WhatsApp.</h1>
+        <p class="lead">Menu Chef é o cardápio e a fila da casa. O cliente pede no link. A cozinha confirma, produz e avisa quando está pronto.</p>
+        <a class="cta" href="#passos">Ver o fluxo</a>
+      </div>
+      <div class="fake" aria-hidden="true">
+        Fila · filial Centro
+        <span>184 · X-brasa · em produção</span>
+        <span>185 · Limonada · recebido</span>
+      </div>
+    </div>
+    <h2 id="passos">Três passos</h2>
+    <ol>
+      <li>A casa cadastra categorias, produtos e a faixa de CEP.</li>
+      <li>O cliente monta a sacola e escolhe entrega ou retirada.</li>
+      <li>A cozinha confirma antes de produzir e avisa quando está pronto.</li>
+    </ol>
+  </main>
+  <script>
+    document.body.dataset.selftest = document.querySelector("h1") ? "ok" : "fail";
+  </script>
+</body>
+</html>

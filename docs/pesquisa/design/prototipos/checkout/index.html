@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protótipo · Checkout</title>
+  <style>
+    :root {
+      --primary: #C2410C;
+      --bg: #FFFBF5;
+      --text: #1C1917;
+      --secondary: #44403C;
+      --surface: #fff;
+      --line: #E7E0D6;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    main { max-width: 520px; margin: 0 auto; padding: 16px 16px 32px; }
+    ol { display: flex; gap: 8px; padding: 0; margin: 0 0 16px; list-style: none; }
+    li { flex: 1; font-size: 13px; color: var(--secondary); }
+    li[aria-current="step"] { color: var(--text); font-weight: 700; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+    .choices { display: grid; gap: 8px; }
+    .choices button, .nav button {
+      min-height: 44px; font: inherit; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+    }
+    .choices button[aria-pressed="true"] { border-color: var(--primary); background: #FFF1E8; }
+    .nav { display: flex; justify-content: space-between; margin-top: 12px; }
+    .nav .go { background: var(--primary); color: #fff; border-color: var(--primary); padding: 0 16px; }
+    label { display: block; margin: 8px 0; }
+    input { font: inherit; font-size: 16px; width: 100%; min-height: 44px; border-radius: 12px; border: 1px solid var(--line); padding: 0 12px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p id="progress">Passo 1 de 3</p>
+    <ol id="steps">
+      <li aria-current="step">Entrega</li>
+      <li>Pagamento</li>
+      <li>Revisão</li>
+    </ol>
+    <div class="panel" id="panel"></div>
+    <div class="nav">
+      <button type="button" id="back">Voltar</button>
+      <button type="button" class="go" id="next">Continuar</button>
+    </div>
+  </main>
+  <script>
+    const state = { step: 0, mode: "entrega", when: "agora", method: "pix", cep: "" };
+    const names = ["Entrega", "Pagamento", "Revisão"];
+    const panel = document.querySelector("#panel");
+    function render() {
+      document.querySelector("#progress").textContent = "Passo " + (state.step + 1) + " de 3";
+      document.querySelectorAll("#steps li").forEach((li, i) => {
+        if (i === state.step) li.setAttribute("aria-current", "step");
+        else li.removeAttribute("aria-current");
+      });
+      if (state.step === 0) {
+        panel.innerHTML = `
+          <div class="choices">
+            <button type="button" data-mode="entrega" aria-pressed="${state.mode === "entrega"}">Entrega</button>
+            <button type="button" data-mode="retirada" aria-pressed="${state.mode === "retirada"}">Retirada no balcão</button>
+          </div>
+          ${state.mode === "entrega" ? `<label>CEP<input id="cep" inputmode="numeric" value="${state.cep}"></label><p>Faixa de exemplo: 01000-000 a 01099-999, frete R$ 8. Fora disso, não entregamos.</p>` : `<p>Sem frete. Aviso quando estiver pronto.</p>`}`;
+      } else if (state.step === 1) {
+        panel.innerHTML = `
+          <div class="choices">
+            <button type="button" data-when="agora" aria-pressed="${state.when === "agora"}">Pagar agora</button>
+            <button type="button" data-when="na-hora" aria-pressed="${state.when === "na-hora"}">Pagar na entrega ou na retirada</button>
+          </div>
+          <div class="choices" style="margin-top:8px">
+            <button type="button" data-method="pix" aria-pressed="${state.method === "pix"}">Pix</button>
+            <button type="button" data-method="cartao" aria-pressed="${state.method === "cartao"}">Cartão</button>
+            <button type="button" data-method="dinheiro" aria-pressed="${state.method === "dinheiro"}">Dinheiro na hora</button>
+          </div>`;
+      } else {
+        const frete = state.mode === "retirada" ? "R$ 0" : "R$ 8";
+        panel.innerHTML = `<p>X-brasa · ${state.mode}</p><p>Frete ${frete}</p><p>${state.when === "agora" ? "Pagar agora" : "Pagar na hora"} · ${state.method}</p><p>Total de exemplo ${state.mode === "retirada" ? "R$ 28" : "R$ 36"}.</p>`;
+      }
+    }
+    panel.addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      if (b.dataset.mode) state.mode = b.dataset.mode;
+      if (b.dataset.when) state.when = b.dataset.when;
+      if (b.dataset.method) state.method = b.dataset.method;
+      render();
+    });
+    panel.addEventListener("input", (e) => { if (e.target.id === "cep") state.cep = e.target.value; });
+    document.querySelector("#next").addEventListener("click", () => { state.step = Math.min(2, state.step + 1); render(); });
+    document.querySelector("#back").addEventListener("click", () => { state.step = Math.max(0, state.step - 1); render(); });
+    render();
+    document.body.dataset.selftest = document.querySelector("#progress").textContent === "Passo 1 de 3" ? "ok" : "fail";
+  </script>
+</body>
+</html>
