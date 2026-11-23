@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protótipo · Cardápio</title>
+  <style>
+    :root {
+      --primary: #C2410C;
+      --bg: #FFFBF5;
+      --text: #1C1917;
+      --secondary: #44403C;
+      --accent: #F59E0B;
+      --surface: #fff;
+      --line: #E7E0D6;
+    }
+    * { box-sizing: border-box; }
+    html, body { overflow-x: clip; }
+    :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 16px 16px 8px;
+    }
+    header p { margin: 4px 0 0; color: var(--secondary); font-size: 14px; }
+    h1 { font-size: 22px; margin: 0; }
+    .tools { display: flex; gap: 8px; margin-top: 12px; }
+    button {
+      font: inherit;
+      min-height: 44px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 0 14px;
+    }
+    button.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .cats {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      gap: 8px;
+      overflow: auto;
+      padding: 8px 16px;
+      background: color-mix(in srgb, var(--bg) 92%, white);
+      border-bottom: 1px solid var(--line);
+    }
+    .cats a {
+      flex: 0 0 auto;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 8px 12px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .cats a[aria-current="true"] { background: var(--text); color: var(--bg); }
+    main { padding: 8px 16px 32px; }
+    section { scroll-margin-top: 68px; }
+    h2 { font-size: 18px; margin: 18px 0 8px; }
+    .card {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .photo {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      background: #F3E6D8;
+    }
+    .card h3 { margin: 0 0 4px; font-size: 16px; }
+    .card p { margin: 0; color: var(--secondary); font-size: 14px; }
+    .price { font-weight: 700; }
+    .skel .photo, .skel h3, .skel p, .skel .price {
+      color: transparent;
+      background: linear-gradient(90deg, #EFE8DE 25%, #F7F1E8 37%, #EFE8DE 63%);
+      background-size: 400% 100%;
+      animation: shine 1.2s ease infinite;
+      border-radius: 8px;
+    }
+    @keyframes shine { to { background-position: -400% 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .skel .photo, .skel h3, .skel p, .skel .price { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Brasa do Bairro</h1>
+    <p>Cardápio de exemplo, filial Centro</p>
+    <div class="tools">
+      <button type="button" id="toggle-skel">Mostrar skeleton</button>
+    </div>
+  </header>
+  <nav class="cats" aria-label="Categorias">
+    <a href="#lanches">Lanches</a>
+    <a href="#bebidas">Bebidas</a>
+    <a href="#doces">Doces</a>
+  </nav>
+  <main id="lista">
+    <section id="lanches">
+      <h2>Lanches</h2>
+      <article class="card">
+        <div class="photo" aria-hidden="true"></div>
+        <div><h3>X-brasa</h3><p>Pão, carne e queijo</p></div>
+        <div class="price">R$ 28</div>
+      </article>
+      <article class="card">
+        <div class="photo" aria-hidden="true"></div>
+        <div><h3>Frango crispy</h3><p>Maionese da casa</p></div>
+        <div class="price">R$ 26</div>
+      </article>
+    </section>
+    <section id="bebidas">
+      <h2>Bebidas</h2>
+      <article class="card">
+        <div class="photo" aria-hidden="true"></div>
+        <div><h3>Limonada</h3><p>500 ml</p></div>
+        <div class="price">R$ 10</div>
+      </article>
+    </section>
+    <section id="doces">
+      <h2>Doces</h2>
+      <article class="card">
+        <div class="photo" aria-hidden="true"></div>
+        <div><h3>Pudim</h3><p>Fatia</p></div>
+        <div class="price">R$ 12</div>
+      </article>
+    </section>
+  </main>
+  <script>
+    const links = [...document.querySelectorAll(".cats a")];
+    const sections = links.map((a) => document.querySelector(a.getAttribute("href")));
+    function spy() {
+      const line = 80;
+      let current = sections[0];
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= line) current = section;
+      }
+      for (const link of links) {
+        link.setAttribute("aria-current", link.getAttribute("href") === "#" + current.id ? "true" : "false");
+      }
+    }
+    document.addEventListener("scroll", spy, { passive: true });
+    spy();
+    document.querySelector("#toggle-skel").addEventListener("click", () => {
+      document.querySelector("#lista").classList.toggle("skel");
+    });
+    const sticky = getComputedStyle(document.querySelector(".cats")).position === "sticky";
+    document.body.dataset.selftest = sticky && sections.length === 3 ? "ok" : "fail";
+  </script>
+</body>
+</html>

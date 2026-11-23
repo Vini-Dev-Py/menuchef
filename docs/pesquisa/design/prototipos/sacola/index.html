@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protótipo · Sacola</title>
+  <style>
+    :root {
+      --primary: #C2410C;
+      --bg: #FFFBF5;
+      --text: #1C1917;
+      --secondary: #44403C;
+      --accent: #F59E0B;
+      --surface: #fff;
+      --line: #E7E0D6;
+    }
+    * { box-sizing: border-box; }
+    html, body { overflow-x: clip; }
+    :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 16px; }
+    h1 { font-size: 20px; margin: 0; }
+    #bag-btn { min-width: 44px; min-height: 44px; border-radius: 999px; border: 0; background: var(--text); color: var(--bg); font: inherit; padding: 0 14px; }
+    main { padding: 0 16px 96px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
+    button.add { min-height: 44px; border: 0; border-radius: 999px; background: var(--primary); color: #fff; font: inherit; padding: 0 14px; }
+    .fly { position: fixed; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); z-index: 5; pointer-events: none; }
+    .scrim { position: fixed; inset: 0; background: rgba(28, 25, 23, .45); opacity: 0; pointer-events: none; }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+    .sheet {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      background: var(--surface); border-radius: 20px 20px 0 0;
+      padding: 12px 16px 24px; transform: translateY(110%);
+      box-shadow: 0 -8px 24px rgba(28, 25, 23, .12);
+    }
+    .sheet.open { transform: translateY(0); }
+    .scrim, .sheet { transition: .25s ease; }
+    .handle { width: 40px; height: 4px; border-radius: 99px; background: var(--line); margin: 0 auto 12px; }
+    @media (prefers-reduced-motion: reduce) {
+      .scrim, .sheet { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sacola</h1>
+    <button type="button" id="bag-btn" aria-haspopup="dialog">Sacola <span id="count">0</span></button>
+  </header>
+  <main>
+    <div class="row">
+      <div><strong>X-brasa</strong><div>R$ 28</div></div>
+      <button class="add" type="button">Adicionar</button>
+    </div>
+    <div class="row">
+      <div><strong>Limonada</strong><div>R$ 10</div></div>
+      <button class="add" type="button">Adicionar</button>
+    </div>
+  </main>
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+    <div class="handle"></div>
+    <h2 id="sheet-title">Sua sacola</h2>
+    <p id="sheet-copy">Nenhum item ainda.</p>
+    <button type="button" id="close">Fechar</button>
+  </div>
+  <script>
+    const countEl = document.querySelector("#count");
+    const bagBtn = document.querySelector("#bag-btn");
+    const sheet = document.querySelector("#sheet");
+    const scrim = document.querySelector("#scrim");
+    const copy = document.querySelector("#sheet-copy");
+    let count = 0;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.body.dataset.reduce = reduce ? "1" : "0";
+    function openSheet() {
+      sheet.hidden = false;
+      requestAnimationFrame(() => { sheet.classList.add("open"); scrim.classList.add("open"); });
+      copy.textContent = count ? count + " item(ns) na sacola." : "Nenhum item ainda.";
+    }
+    function closeSheet() {
+      sheet.classList.remove("open");
+      scrim.classList.remove("open");
+      setTimeout(() => { sheet.hidden = true; }, reduce ? 0 : 250);
+    }
+    function fly(from) {
+      if (reduce) return Promise.resolve("reduced");
+      const dot = document.createElement("span");
+      dot.className = "fly";
+      const start = from.getBoundingClientRect();
+      const end = bagBtn.getBoundingClientRect();
+      dot.style.left = start.left + "px";
+      dot.style.top = start.top + "px";
+      document.body.appendChild(dot);
+      const anim = dot.animate([
+        { transform: "translate(0,0) scale(1)" },
+        { transform: `translate(${end.left - start.left}px, ${end.top - start.top}px) scale(.4)` }
+      ], { duration: 450, easing: "cubic-bezier(.2,.8,.2,1)" });
+      return anim.finished.then(() => { dot.remove(); return "flew"; });
+    }
+    document.querySelectorAll(".add").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        count += 1;
+        countEl.textContent = String(count);
+        document.body.dataset.lastadd = reduce ? "reduced" : "started";
+        if (!reduce) fly(btn);
+      });
+    });
+    bagBtn.addEventListener("click", openSheet);
+    document.querySelector("#close").addEventListener("click", closeSheet);
+    scrim.addEventListener("click", closeSheet);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+    document.body.dataset.selftest = "ok";
+    if (location.search.includes("auto=1")) {
+      document.querySelector(".add").click();
+      document.body.dataset.selftest = count === 1 && document.body.dataset.lastadd ? "ok" : "fail";
+    }
+  </script>
+</body>
+</html>

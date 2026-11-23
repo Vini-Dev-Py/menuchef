@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protótipo · Painel</title>
+  <style>
+    :root {
+      --primary: #C2410C;
+      --bg: #FFFBF5;
+      --text: #1C1917;
+      --secondary: #44403C;
+      --surface: #fff;
+      --line: #E7E0D6;
+    }
+    * { box-sizing: border-box; }
+    html, body { overflow-x: clip; }
+    :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    header { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 16px; }
+    h1 { font-size: 20px; margin: 0; }
+    select, button { font: inherit; min-height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
+    .board { display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 12px; padding: 0 16px 24px; overflow: auto; }
+    .col { background: #F6F0E8; border-radius: 16px; padding: 10px; min-height: 240px; }
+    .col h2 { font-size: 14px; margin: 0 0 8px; }
+    .card { background: var(--surface); border-radius: 12px; padding: 10px; margin-bottom: 8px; border: 1px solid var(--line); }
+    .card button { margin-top: 8px; background: var(--primary); color: #fff; border-color: var(--primary); padding: 0 10px; }
+    .skel .card h3, .skel .card p { color: transparent; background: #EFE8DE; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Fila de hoje</h1>
+      <label>Filial
+        <select id="filial" aria-label="Filial">
+          <option>Brasa · Centro</option>
+          <option>Brasa · Praia</option>
+        </select>
+      </label>
+    </div>
+    <button type="button" id="skel">Skeleton</button>
+  </header>
+  <div class="board" id="board"></div>
+  <script>
+    const columns = ["Recebido", "Confirmado", "Em produção", "Pronto"];
+    const menus = {
+      "Brasa · Centro": [{ id: 184, item: "X-brasa", where: "Retirada", col: 0 }],
+      "Brasa · Praia": [{ id: 190, item: "Limonada", where: "Entrega", col: 1 }]
+    };
+    let filial = "Brasa · Centro";
+    let skeleton = false;
+    const board = document.querySelector("#board");
+    function card(order) {
+      const next = columns[order.col + 1];
+      return `<article class="card"><h3>Pedido ${order.id}</h3><p>${order.item} · ${order.where}</p>${next ? `<button type="button" data-id="${order.id}">${next}</button>` : ""}</article>`;
+    }
+    function render() {
+      const orders = menus[filial];
+      board.classList.toggle("skel", skeleton);
+      board.innerHTML = columns.map((name, index) => {
+        const items = orders.filter((o) => o.col === index).map(card).join("");
+        return `<section class="col"><h2>${name}</h2>${items || "<p>Vazio</p>"}</section>`;
+      }).join("");
+    }
+    board.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const order = menus[filial].find((o) => String(o.id) === btn.dataset.id);
+      if (order && order.col < columns.length - 1) order.col += 1;
+      render();
+    });
+    document.querySelector("#filial").addEventListener("change", (e) => { filial = e.target.value; render(); });
+    document.querySelector("#skel").addEventListener("click", () => { skeleton = !skeleton; render(); });
+    render();
+    document.body.dataset.selftest = board.querySelectorAll(".col").length === 4 ? "ok" : "fail";
+  </script>
+</body>
+</html>

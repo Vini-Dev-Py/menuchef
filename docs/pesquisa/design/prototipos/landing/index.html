@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protótipo · Landing do Menu Chef</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #C2410C;
+      --bg: #FFFBF5;
+      --text: #1C1917;
+      --secondary: #44403C;
+      --accent: #F59E0B;
+      --surface: #fff;
+      --line: #E7E0D6;
+    }
+    * { box-sizing: border-box; }
+    html, body { overflow-x: clip; margin: 0; }
+    body {
+      font-family: "Source Sans 3", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    a { color: inherit; }
+    .top {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; position: sticky; top: 0; z-index: 5;
+      background: color-mix(in srgb, var(--bg) 90%, white);
+    }
+    .mark { font-family: Fraunces, Georgia, serif; font-weight: 640; }
+    .top a.cta, a.cta {
+      display: inline-flex; align-items: center; min-height: 44px;
+      background: var(--primary); color: #fff; text-decoration: none;
+      border-radius: 999px; padding: 0 16px;
+    }
+    .scene { min-height: 100svh; padding: 24px 20px 48px; display: flex; flex-direction: column; justify-content: center; }
+    h1, h2 { font-family: Fraunces, Georgia, serif; font-weight: 560; line-height: 1.12; margin: 0 0 12px; }
+    h1 { font-size: clamp(2rem, 6vw, 4.2rem); max-width: 16ch; }
+    h2 { font-size: clamp(1.6rem, 4vw, 2.6rem); max-width: 20ch; }
+    .lead { font-size: 1.15rem; max-width: 38rem; color: var(--secondary); }
+    .queue { background: var(--text); color: var(--bg); border-radius: 20px; padding: 16px; max-width: 420px; }
+    .queue article { background: #2A211C; border-radius: 12px; padding: 12px; margin-top: 8px; }
+    .queue strong { color: var(--accent); font-weight: 600; }
+    ol { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+    li { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+    .bar { height: 6px; background: var(--line); border-radius: 99px; margin-top: 12px; overflow: hidden; }
+    .bar span { display: block; height: 100%; width: 33%; background: var(--primary); }
+    @media (max-width: 719px) {
+      ol li:not(.on) { display: none; }
+    }
+    body[data-cena="passos"] #abertura,
+    body[data-cena="passos"] #fecho,
+    body[data-cena="fecho"] #abertura,
+    body[data-cena="fecho"] #passos { display: none; }
+    @media (min-width: 720px) {
+      #abertura { display: grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items: center; }
+      .bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <span class="mark">Menu Chef</span>
+    <a href="#fila">Ver a fila</a>
+  </header>
+  <main>
+    <section class="scene" id="abertura">
+      <div>
+        <h1>O pedido sai da conversa e entra na fila.</h1>
+        <p class="lead">O cliente pede no link. A cozinha confirma, produz e avisa quando está pronto. O WhatsApp pode avisar. Não é a comanda.</p>
+        <a class="cta" href="#passos">Ver os três passos</a>
+      </div>
+      <div class="queue" id="fila" aria-label="Fila de exemplo">
+        <div>Fila · filial Centro</div>
+        <article data-card="1"><strong>Recebido</strong><br>185 · Limonada · entrega</article>
+        <article data-card="2" hidden><strong>Em produção</strong><br>184 · X-brasa · retirada</article>
+        <article data-card="3" hidden><strong>Pronto</strong><br>183 · Pudim · retirada</article>
+      </div>
+    </section>
+    <section class="scene" id="passos">
+      <h2>Três passos, e a casa continua dona do pedido.</h2>
+      <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+      <ol id="lista">
+        <li class="on" data-step="1">A casa cadastra o cardápio, o horário e a faixa de CEP.</li>
+        <li data-step="2">O cliente escolhe entrega ou retirada e paga agora ou na hora.</li>
+        <li data-step="3">A cozinha confirma antes de produzir. Pronto é aviso, não surpresa.</li>
+      </ol>
+    </section>
+    <section class="scene" id="fecho">
+      <h2>Uma marca, várias filiais, um acesso.</h2>
+      <p class="lead">Quem opera troca de casa sem sair. O preço, o frete e a equipe são da filial. A assinatura é da empresa.</p>
+      <a class="cta" href="#abertura">Voltar ao começo</a>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script>
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.body.dataset.reduce = reduce ? "1" : "0";
+    const desk = matchMedia("(min-width: 720px)");
+    document.querySelectorAll("[data-card]").forEach((el) => { el.hidden = false; });
+    function showStep(n) {
+      document.querySelectorAll("#lista li").forEach((li) => {
+        li.classList.toggle("on", li.dataset.step === String(n));
+      });
+      const bar = document.querySelector("#bar");
+      if (bar) bar.style.width = (n * 33) + "%";
+    }
+    if (!reduce && window.gsap && window.ScrollTrigger) {
+      gsap.registerPlugin(ScrollTrigger);
+      if (window.Lenis) {
+        const lenis = new Lenis({ autoRaf: false });
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+        lenis.on("scroll", ScrollTrigger.update);
+      }
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 720px) and (prefers-reduced-motion: no-preference)", () => {
+        const cards = gsap.utils.toArray("[data-card]");
+        if (new URLSearchParams(location.search).get("quadro") === "2") return;
+        gsap.set(cards.slice(1), { autoAlpha: 0, y: 16 });
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: "#abertura", start: "top top", end: "+=120%", pin: true, scrub: 0.6 }
+        });
+        tl.to(cards[1], { autoAlpha: 1, y: 0, ease: "none" }, 0.3)
+          .to(cards[2], { autoAlpha: 1, y: 0, ease: "none" }, 0.6);
+      });
+      mm.add("(max-width: 719px) and (prefers-reduced-motion: no-preference)", () => {
+        const items = gsap.utils.toArray("#lista li");
+        ScrollTrigger.create({
+          trigger: "#passos",
+          start: "top 30%",
+          end: "bottom 70%",
+          onUpdate: (self) => showStep(Math.min(3, 1 + Math.floor(self.progress * 3)))
+        });
+      });
+    } else {
+      showStep(1);
+    }
+    function overflow() {
+      return document.documentElement.scrollWidth - window.innerWidth;
+    }
+    const cena = new URLSearchParams(location.search).get("cena");
+    if (cena) document.body.dataset.cena = cena;
+    document.body.dataset.overflow = String(overflow());
+    document.body.dataset.selftest = document.querySelector("h1") && overflow() <= 0 ? "ok" : "fail";
+  </script>
+</body>
+</html>
