@@ -12,7 +12,7 @@
   1. Pedido nasce no cardápio com a marca da loja e cai direto na **fila do painel** (nunca perdido no WhatsApp).
   2. Status claros com o mesmo nome na cozinha e no celular do cliente (`Recebido → Confirmado → Em produção → Pronto → Retirada/Entrega`).
   3. **Multi-filial de verdade com 1 único login** e preço/frete por CEP independentes por unidade.
-  4. **Zero comissão sobre taxa do motoboy ou pagamento feito na porta** (dinheiro, maquininha ou Pix da casa) e tabela transparente do que está incluso no plano.
+  4. **Sem comissão, apenas mensalidade.** O Menu Chef não cobra taxa por pedido, por entrega nem por pagamento online. A tabela de planos mostra o que a mensalidade inclui. Taxa de um gateway real, quando existir, é do provedor, não receita da plataforma.
 
 ---
 
@@ -40,20 +40,20 @@ Toda rota prerenderizada (`/`, `/funcionalidades`, `/planos`, `/multi-filial`, `
 - **JSON-LD embutido no `<head>`:**
   - `Organization` (Menu Chef, logo, canais de contato).
   - `SoftwareApplication` (`applicationCategory: "BusinessApplication"`, `operatingSystem: "Web, PWA"`, `inLanguage: "pt-BR"`, `offers` transparentes sem preços escondidos).
-  - `FAQPage` (perguntas diretas que donos de restaurante fazem a assistentes de IA: *"Como funciona frete por CEP?"*, *"O Menu Chef cobra comissão sobre pagamento na entrega?"*, *"Dá para gerenciar várias filiais no mesmo login?"*).
+  - `FAQPage` (perguntas diretas que donos de restaurante fazem a assistentes de IA: *"Como funciona frete por CEP?"*, *"O Menu Chef cobra comissão?"*, *"Dá para gerenciar várias filiais no mesmo login?"*). A resposta de comissão, em 40–60 palavras, diz que o modelo é somente mensalidade, sem comissão por pedido ou por pagamento online.
   - `BreadcrumbList` nas páginas internas.
 
 ### 3.2 Redação Otimizada para AEO e GEO
 - **Respostas diretas e citáveis:** abrir cada tópico/FAQ com uma resposta factual de 40–60 palavras em linguagem direta antes de detalhar.
 - **Tabelas comparativas HTML reais (`<table>`):** comparação clara do que está incluso na assinatura, fluxo de status e modelo de cobrança (motores generativos extraem tabelas semânticas com alta precisão).
-- **Zero jargão vazio:** usar os termos reais do domínio brasileiro de food service (*cardápio digital sem comissão*, *frete por faixa de CEP*, *gestor de pedidos*, *multifilial*, *pagamento na entrega*, *comanda térmica*).
+- **Zero jargão vazio:** usar os termos reais do domínio brasileiro de food service (*sem comissão, apenas mensalidade*, *frete por faixa de CEP*, *gestor de pedidos*, *multifilial*, *pagamento na entrega*, *comanda térmica*).
 
 ### 3.3 Especificação `llms.txt` v2 (Agosto/2026) + Réplicas `.md`
 Seguir a revisão **v2 da especificação `llms.txt`**:
 1. **`/llms.txt`** na raiz (`text/markdown; charset=utf-8`):
    - `# Menu Chef` (H1 obrigatório)
    - `> Resumo conciso da plataforma SaaS de cardápio digital e delivery próprio multi-filial no Brasil.` (blockquote)
-   - Parágrafo orientando sobre o modelo comercial (sem comissão por pedido, onboarding assistido via contato) e links estruturados em seções H2 (`## Produto`, `## Planos e Transparência`, `## Perguntas Frequentes`, `## Legal e Privacidade`, `## Contato`) apontando para as réplicas `.md`.
+   - Parágrafo orientando sobre o modelo comercial (**sem comissão, apenas mensalidade**; onboarding assistido via contato) e links estruturados em seções H2 (`## Produto`, `## Planos e Transparência`, `## Perguntas Frequentes`, `## Legal e Privacidade`, `## Contato`) apontando para as réplicas `.md`. O texto não fala em taxa da plataforma.
 2. **Réplicas Markdown limpas (`.md`):** cada página pública principal expõe sua versão limpa em Markdown (ex.: `/index.md`, `/funcionalidades.md`, `/planos.md`, `/perguntas-frequentes.md`, `/termos-de-uso.md`, `/politica-de-privacidade.md`) geradas no build a partir da mesma fonte de conteúdo (evitando divergência entre HTML e Markdown).
 3. **Descoberta formal v2:** cada página HTML inclui no `<head>` e/ou header HTTP `Link`:
    - `<link rel="alternate" type="text/markdown" href="/funcionalidades.md" />`
@@ -91,8 +91,8 @@ Seguir a revisão **v2 da especificação `llms.txt`**:
 | **2. Hero (Peça Central)** | Proposta direta ("Seu cardápio próprio, com a comanda no painel — não perdida no WhatsApp") + prévia interativa/estática da **fila de pedidos na paleta Brasa** + CTA primário | Mobile: 1 coluna, texto + CTA acima da dobra; Desktop: 2 colunas assimétricas |
 | **3. Fluxo em 3 Passos (Sequência real)** | 1) Ativação assistida e cardápio no ar → 2) Cliente pede no celular sem app → 3) Cozinha confirma, produz e avisa | Mobile: pilha vertical; Tablet/Desktop: 3 colunas conectadas |
 | **4. Multi-filial & Operação** | Troca de empresa/filial no mesmo login, frete por faixa de CEP, pausa rápida, modo escuro de cozinha e PWA | Grade responsiva 1 → 2 colunas com capturas em WebP |
-| **5. Transparência de Planos** | Tabela clara do que **está incluso** vs o que **fica de fora / módulo futuro** + garantia de zero taxa sobre entrega ou pagamento na porta | Cards empilhados no mobile; tabela semântica `<table>` no desktop |
-| **6. FAQ (AEO/GEO)** | 6–8 perguntas objetivas usando Accordion Base UI (conteúdo presente no HTML prerenderizado para crawlers) | 1 coluna legível (largura máx. 70ch) |
+| **5. Transparência de Planos** | Tabela clara do que **está incluso** na mensalidade vs o que **fica de fora / módulo futuro**. Frase fixa: **sem comissão, apenas mensalidade** | Cards empilhados no mobile; tabela semântica `<table>` no desktop |
+| **6. FAQ (AEO/GEO)** | 6–8 perguntas objetivas usando Accordion Base UI (conteúdo presente no HTML prerenderizado para crawlers). Inclui *"O Menu Chef cobra comissão?"* com resposta: não, somente mensalidade, sem comissão por pedido ou pagamento online | 1 coluna legível (largura máx. 70ch) |
 | **7. Formulário de Contato (Onboarding Assistido)** | Captura: Nome, Nome do Restaurante, WhatsApp/Telefone, E-mail, Quantidade de Filiais, Mensagem opcional + checkbox explícito de aceite da Política de Privacidade (`privacy_v1.0`) | Inputs com `font-size >= 16px`, máscara leve de telefone BR, validação Zod inline |
 | **8. Footer** | Links institucionais, `/termos-de-uso`, `/politica-de-privacidade`, link discreto para `/llms.txt` e canal comercial/DPO | 1 coluna → 4 colunas |
 
@@ -126,7 +126,7 @@ A Landing só depende de **1 único endpoint** da API (e permanece 100% navegáv
     ```
   - **Response `201 Created`:** `{ "id": "019a...", "status": "received", "message": "Recebemos seu contato. Nossa equipe retornará em breve." }`
   - **Erros esperados (RFC 9457):** `400/422` (erros por campo exibidos inline), `429` (rate limit excedido com mensagem amigável).
-  - **Anti-spam:** campo honeypot invisível + rate limit por IP no Traefik/`redis-state`.
+  - **Anti-spam:** campo honeypot invisível + rate limit por IP no Traefik e no prefixo `mc:rl:` da instância Redis única.
 
 ---
 
@@ -141,4 +141,5 @@ A Landing só depende de **1 único endpoint** da API (e permanece 100% navegáv
   - `GET /pagina-que-nao-existe` → `404 Not Found` real (não `200 OK`).
 - [ ] **Verificação de Mídia & Privacidade:** zero imagens `.png`/`.jpg` pesadas (100% `.webp` ou `.svg`) e zero scripts de tracking/anúncios de terceiros carregados.
 - [ ] **Unitários (Vitest + RTL):** validação Zod do formulário de lead (incluindo obrigatoriedade do aceite da Política de Privacidade), máscara de telefone, estados de envio/erro/rate-limit e `<MotionConfig reducedMotion="user">`.
-- [ ] **E2E (Cypress):** testa carregamento em `375px`, `768px` e `1440px` sem scroll horizontal, leitura de `/termos-de-uso` e `/politica-de-privacidade`, envio bem-sucedido de lead com aceite legal, exibição de erro inline em campos inválidos e auditoria `cypress-axe` (WCAG 2.2 AA).
+- [ ] **Copy comercial:** HTML de `/`, `/planos`, `/perguntas-frequentes`, `/llms.txt` e as réplicas `.md` trazem "sem comissão, apenas mensalidade" e não trazem "taxa da plataforma", `platform_fee` nem comissão do Menu Chef sobre pedido ou pagamento online.
+- [ ] **E2E (Cypress):** testa carregamento em `375px`, `768px` e `1440px` sem scroll horizontal, leitura de `/termos-de-uso` e `/politica-de-privacidade`, a pergunta de comissão na FAQ, envio bem-sucedido de lead com aceite legal, exibição de erro inline em campos inválidos e auditoria `cypress-axe` (WCAG 2.2 AA).

@@ -29,7 +29,7 @@ Para eliminar latência de *CORS preflight* (`OPTIONS`), permitir cookies de ses
 ### Três Redes Isoladas no Docker
 1. `proxy` (bridge externa): conecta **apenas** Traefik aos containers voltados para HTTP (`landing`, `storefront`, `admin`, `api`, endpoint público de mídia do `garage`).
 2. `socket-tier` (bridge `--internal`, sem acesso à internet): conecta **apenas** `traefik` ao `docker-socket-proxy`.
-3. `app-internal` (bridge `--internal` em produção): conecta `api` ↔ `postgres`, `redis-state`, `redis-cache` e porta interna/admin do `garage`. **Bancos de dados jamais entram na rede `proxy` e jamais publicam `ports:` no host em produção.**
+3. `app-internal` (bridge `--internal` em produção): conecta `api` ↔ `postgres`, `redis` e porta interna/admin do `garage`. **Bancos de dados jamais entram na rede `proxy` e jamais publicam `ports:` no host em produção.** Há um único serviço Redis.
 
 ### Proibição de Montar `/var/run/docker.sock` no Traefik
 Montar o socket do Docker diretamente no Traefik (mesmo `:ro`) concede privilégio equivalente a root no host em caso de comprometimento do proxy.
@@ -47,8 +47,7 @@ Montar o socket do Docker diretamente no Traefik (mesmo `:ro`) concede privilég
 | **Proxy Reverso** | `traefik:v3.7` | Versões v3.0–v3.6 são EOL; v3.7 suporta HTTP/3 (QUIC), TLS ACME automático (`acme.json` com `chmod 600`) e access logs JSON estruturados |
 | **Socket Proxy** | `tecnativa/docker-socket-proxy:0.3` | Isola leitura do Docker daemon em rede interna |
 | **PostgreSQL** | `postgres:19.0-alpine` | Release estável de nov/2026 (suporte até nov/2031); traz **`uuidv7()` nativo**, `REPACK (CONCURRENTLY)`, AIO e extensões `unaccent` + `pg_trgm` para FTS PT-BR |
-| **Redis (Estado Crítico)** | `redis:8.0-alpine` (`redis-state`) | Exclusivo para sessões opacas `alexedwards/scs`, Pub/Sub SSE e rate limiting. **`--appendonly yes --appendfsync everysec --maxmemory-policy noeviction`** (jamais expulsa sessões da cozinha sob pico de tráfego) |
-| **Redis (Cache Efêmero)** | `redis:8.0-alpine` (`redis-cache`) | Exclusivo para cache descartável (cardápio público, horários da filial, permissões RBAC). **`--save "" --appendonly no --maxmemory 256mb --maxmemory-policy allkeys-lru`** (sem I/O de disco; fallback transparente ao Postgres) |
+| **Redis (instância única)** | `redis:8.0-alpine` (`redis`) | Sessão `alexedwards/scs`, Pub/Sub SSE, rate-limit e cache na mesma instância, separados por prefixo (`mc:sess:`, `mc:cache:`, `mc:rl:`) e por canal (`mc:ps:`). Comando: `--appendonly yes --appendfsync everysec --save "" --maxmemory 256mb --maxmemory-policy volatile-ttl --client-output-buffer-limit "pubsub 32mb 8mb 60"`. `volatile-ttl` despeja primeiro a chave de TTL mais curto (cache e rate-limit) e preserva a sessão de 24h. `allkeys-lru` e a dupla `redis-state` + `redis-cache` ficam de fora |
 | **Object Storage S3** | `dxflrs/garage:v2.5.0` | **MinIO CE foi arquivado em abr/2026** (imagens descontinuadas e CVEs sem patch). Garage v2.5 consome ~50 MB de RAM, suporta S3 (`PutObject`, `GetObject`, presigned URLs), sem credenciais default inseguras, atrás de `MediaStoragePort` (fácil troca para Cloudflare R2 / AWS S3 em produção cloud) |
 
 ### Detalhes Críticos de SSE no Traefik v3
@@ -72,7 +71,7 @@ Definidos uma única vez via File Provider (`@file`) para evitar duplicação de
   - `referrerPolicy: "strict-origin-when-cross-origin"`
   - Remoção de headers `Server` e `X-Powered-By`
   - CSP específica por app (ex.: permitindo `img-src` do domínio `cdn.menuchef.com.br` e `blob:`/`data:` onde necessário, bloqueando `unsafe-eval`).
-- **`api-ratelimit`:** `average: 100`, `burst: 50` por IP (complementado por rate limit mais estrito por rota sensível via `redis-state` dentro da API Go).
+- **`api-ratelimit`:** `average: 100`, `burst: 50` por IP (complementado por rate limit mais estrito por rota sensível no prefixo `mc:rl:` da instância Redis única, dentro da API Go).
 - **`compress-default`:** Gzip/Brotli para assets estáticos e respostas JSON (excluído das rotas SSE).
 - **Dashboard Traefik:** `--api.insecure=false` em produção; acessível apenas via túnel SSH ou rota protegida com `basicAuth` + `ipAllowList`.
 
@@ -82,9 +81,9 @@ Definidos uma única vez via File Provider (`@file`) para evitar duplicação de
 
 ### 5.1 Backend Go (`apps/api/Dockerfile`)
 - **Stage 1 (`builder`):** `golang:1.27.4-alpine`, `CGO_ENABLED=0`, `go mod download` com cache de camada, build estático com `-trimpath -ldflags="-s -w"`.
-- **Stage 2 (`runtime`):** `gcr.io/distroless/static-debian12:nonroot` (ou `alpine` minimal non-root UID `10001`), contendo apenas o binário `/app/api`, CA certificates e tzdata (`America/Sao_Paulo`).
+- **Stage 2 (`runtime`):** `gcr.io/distroless/static-debian12:nonroot` (ou `alpine` minimal non-root UID `10001`), contendo apenas o binário `/app/api`, CA certificates e **tzdata completo** (para `time.LoadLocation` resolver `America/Sao_Paulo`, `America/Manaus` e as demais zonas IANA). O processo roda com `TZ=UTC`. O fuso de negócio é `branches.timezone`, nunca o fuso do container e nunca `time.Local`.
 - **Healthcheck:** subcomando interno `/app/api --healthcheck` chamando `http://127.0.0.1:8081/api/v1/health/live` (evita precisar de `curl`/`wget` dentro de imagem distroless).
-- **Graceful Shutdown:** escuta `SIGINT`/`SIGTERM`, drena conexões HTTP ativas e encerra streams SSE com timeout de 15s antes de fechar `pgxpool`, `redis-state` e `redis-cache`.
+- **Graceful Shutdown:** escuta `SIGINT`/`SIGTERM`, drena conexões HTTP ativas e encerra streams SSE com timeout de 15s antes de fechar `pgxpool` e o cliente único do Redis.
 
 ### 5.2 Frontends Vite / TanStack Start (`apps/{landing,storefront,admin}/Dockerfile`)
 - **Stage 1 (`builder`):** `node:24-slim` + `pnpm` (Corepack), build de produção (`pnpm build`).
@@ -102,8 +101,8 @@ Definidos uma única vez via File Provider (`@file`) para evitar duplicação de
 
 | Arquivo | Uso | Características |
 | :--- | :--- | :--- |
-| `infra/docker-compose.base.yml` | Definição comum dos serviços (`postgres`, `redis-state`, `redis-cache`, `garage`, `api`, `landing`, `storefront`, `admin`) | Sem portas expostas no host para bancos; variáveis via `.env` |
-| `infra/docker-compose.dev.yml` | Desenvolvimento local (override) | Traefik em HTTP (`*.menuchef.localhost`), Vite dev servers com HMR opcional, `air` (hot-reload Go) opcional, portas locais de debug (`127.0.0.1:5432`, `127.0.0.1:6379`, `127.0.0.1:6380`) e dashboard Traefik em `127.0.0.1:8080` |
+| `infra/docker-compose.base.yml` | Definição comum dos serviços (`postgres`, `redis`, `garage`, `api`, `landing`, `storefront`, `admin`) | Sem portas expostas no host para bancos; variáveis via `.env`. Um serviço `redis`, não dois |
+| `infra/docker-compose.dev.yml` | Desenvolvimento local (override) | Traefik em HTTP (`*.menuchef.localhost`), Vite dev servers com HMR opcional, `air` (hot-reload Go) opcional, portas locais de debug (`127.0.0.1:5432`, `127.0.0.1:6379`) e dashboard Traefik em `127.0.0.1:8080` |
 | `infra/docker-compose.test.yml` | Execução de suite **Cypress E2E** em CI | Stack completa buildada em modo produção, banco PostgreSQL limpo/efêmero (`tmpfs`), seed determinístico e container Cypress headless |
 | `infra/docker-compose.prod.yml` | Produção / Staging | Traefik v3.7 com TLS Let's Encrypt (`acme.json` `0600`), HTTP/3, `restart: unless-stopped`, `security_opt: [no-new-privileges:true]`, limites de `mem_limit`/`cpus` por container e zero portas de banco publicadas |
 
@@ -111,7 +110,7 @@ Definidos uma única vez via File Provider (`@file`) para evitar duplicação de
 
 ## 7. Backup, Persistência e Operação
 
-- **Volumes nomeados explícitos:** `pg_data`, `redis_state_data`, `garage_meta`, `garage_data`, `traefik_acme` (`redis-cache` é 100% em memória, sem volume persistente).
+- **Volumes nomeados explícitos:** `pg_data`, `redis_data` (AOF da instância única), `garage_meta`, `garage_data`, `traefik_acme`.
 - **Política de backup (Produção):** dump lógico diário (`pg_dump --format=custom`) + retenção off-site (S3/R2 externo via `rclone`) e teste periódico de restore em ambiente efêmero.
 - **Migrations em deploy:** container/job efêmero dedicado rodando `goose up` com credencial `menuchef_migrator` **antes** do rollout da nova versão da API (`menuchef_app`).
 
@@ -120,11 +119,11 @@ Definidos uma única vez via File Provider (`@file`) para evitar duplicação de
 ## 8. Critérios de Aceite & Plano de Testes da Infraestrutura
 
 - [ ] `docker compose -f infra/docker-compose.base.yml -f infra/docker-compose.dev.yml up -d` sobe 100% dos serviços saudáveis (`healthy`) em menos de 60s em máquina limpa.
-- [ ] Containers `postgres`, `redis-state`, `redis-cache` e admin do `garage` não estão acessíveis fora da rede `app-internal` em `prod`.
+- [ ] Containers `postgres`, `redis` e admin do `garage` não estão acessíveis fora da rede `app-internal` em `prod`. Não existe serviço `redis-state` nem `redis-cache`.
 - [ ] Container `traefik` não possui acesso direto a `/var/run/docker.sock` (somente via `docker-socket-proxy` na rede `socket-tier`).
-- [ ] `redis-state` roda com `maxmemory-policy noeviction` + AOF e `redis-cache` roda com `maxmemory-policy allkeys-lru` sem persistência em disco.
+- [ ] O serviço `redis` roda com `appendonly yes`, `appendfsync everysec`, `save ""`, `maxmemory-policy volatile-ttl` e um único volume `redis_data`. `CONFIG GET maxmemory-policy` devolve `volatile-ttl`. A API sobe com `TZ=UTC` e consegue carregar `America/Manaus`.
 - [ ] Teste automatizado valida:
   - `GET https://menuchef.localhost/` → `200 OK` (HTML prerenderizado) e `GET https://menuchef.localhost/rota-inexistente` → `404 Not Found`;
-  - `GET https://pedir.menuchef.localhost/api/v1/health/ready` → `200 OK` (validando PG 19 + `redis-state` + `redis-cache` + Garage);
+  - `GET https://pedir.menuchef.localhost/api/v1/health/ready` → `200 OK` (validando PG 19 + a instância Redis + Garage);
   - Stream SSE `/api/v1/health/sse-smoke` (ou rota SSE autenticada) entrega eventos em < 200ms sem buffering do Traefik;
   - Todos os containers rodam como usuário non-root (`id -u` != `0`).

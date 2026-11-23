@@ -30,7 +30,8 @@
 
 ### 3.1 Cabeçalho da Filial, Horário e Pausa
 - Exibe logo da filial, nome, status em tempo real (**Aberta**, **Fechada — abre às HH:MM**, ou **Pausada temporariamente** com motivo da loja), tempo médio estimado e modalidades ativas (Entrega / Retirada).
-- **Regra crítica:** quando a loja está **fechada ou pausada**, o cliente ainda pode ver o cardápio para consultar preços, mas os botões "Adicionar" e o checkout ficam **desabilitados** com explicação explícita do horário — evitando pagamento à toa.
+- **Fuso da filial:** "aberto agora", "abre às" e "fecha às" vêm do servidor, calculados em `branches.timezone` (IANA, default `America/Sao_Paulo`). O browser formata o relógio com esse fuso. Não usa o fuso do celular nem UTC. Exemplo: grade 10:00–22:00 no instante `2026-11-23T01:30:00Z` mostra Manaus aberta (21:30) e São Paulo fechada (22:30). A pausa continua imediata e ganha do horário.
+- **Regra crítica:** quando a loja está **fechada ou pausada**, o cliente ainda pode ver o cardápio para consultar preços, mas os botões "Adicionar" e o checkout ficam **desabilitados** com explicação explícita do horário no fuso da filial — evitando pagamento à toa.
 - Se a filial definir cor primária customizada, a UI calcula luminância WCAG e escolhe automaticamente texto `#FFFFFF` ou `#1C1917` sobre o botão primário (garantindo `>= 4,5:1`).
 
 ### 3.2 Navegação do Cardápio & Busca Full-Text Search
@@ -73,6 +74,7 @@ No mobile, exibe **1 passo por vez** com indicador textual (`Passo 1 de 3`, não
    - Ao optar por criar conta opcional, exige aceite versionado de Termos e Política de Privacidade (`accepted_terms_version`, `accepted_privacy_version`).
 3. **Passo 3 — Cupom, Pagamento e Resumo Final:**
    - Campo de **Cupom** com validação imediata (`POST .../coupons/validate`), exibindo desconto ou motivo exato de invalidez inline. Caso o cupom esgote no exato instante do envio (`409 COUPON_UNAVAILABLE_OR_EXHAUSTED`), exibe alerta claro permitindo remover o cupom e concluir sem perder os dados.
+   - **Limite por cliente (decisão de 23/11/2026):** se o cupom tem `max_uses_per_customer` e a pessoa está como convidado, a validação e o envio devolvem `422 COUPON_REQUIRES_ACCOUNT`. O texto na tela é *"Este cupom tem limite por cliente. Entre na sua conta para usá-lo."*, com botão **Entrar para usar este cupom**. A sacola não é esvaziada. Cupom sem esse limite segue no checkout de convidado. Cliente logado que já atingiu o teto vê *"Você já usou este cupom o número máximo de vezes."* (`409 COUPON_CUSTOMER_LIMIT_REACHED`).
    - Seleção clara entre:
      - **Pagar agora (Online — Modo Mocado no MVP):**
        - **Pix (Mocado):** cria pedido em `awaiting_payment`, gera tela de QR Code + botão "Copiar código Pix" + controles de demonstração/teste do MVP ("Simular aprovação", "Simular recusa", "Simular expiração") quando `VITE_MOCK_PAYMENT_UI=true`.
@@ -83,7 +85,7 @@ No mobile, exibe **1 passo por vez** com indicador textual (`Passo 1 de 3`, não
 
 ### 3.6 Acompanhamento em Tempo Real (SSE) & Cancelamento Pré-Confirmação
 - Tela `/$branchSlug/pedido/$trackingToken` acessível imediatamente após fechar o pedido (e compartilhável/favoritável sem login):
-  - Exibe **Número curto em destaque** (`Pedido #042`), comprovante completo e linha do tempo com os mesmos nomes da cozinha:
+  - Exibe **Número curto em destaque** (`Pedido #042`), comprovante completo (data e hora no fuso da filial) e linha do tempo com os mesmos nomes da cozinha:
     `Recebido → Confirmado → Em produção → Pronto → Aguardando retirada / Saiu para entrega → Concluído`.
   - Conecta via `EventSource` em `/api/v1/public/orders/{trackingToken}/stream` atualizando a linha do tempo em tempo real (com reconexão automática e fallback polling se a rede bloquear SSE).
   - **Botão "Cancelar pedido":** visível e ativo **somente** enquanto o status for `awaiting_payment` ou `received`. Exige Dialog de confirmação (e informa que eventual cupom utilizado será estornado automaticamente). Assim que a cozinha confirma (`confirmed`), o botão some e a tela explica que o preparo já começou (exibindo contato da loja).
@@ -132,12 +134,14 @@ No mobile, exibe **1 passo por vez** com indicador textual (`Passo 1 de 3`, não
   - Validação de grupos de adicionais obrigatórios bloqueando "Adicionar";
   - Persistência/restauração da sacola por `branchSlug` sem misturar duas filiais e sem gravar credenciais;
   - Geração, reutilização em retry e renovação de `Idempotency-Key` ao alterar payload do checkout, mais tratamento de `409`/`422`;
-  - Comportamento de loja pausada/fechada bloqueando adição;
+  - Comportamento de loja pausada/fechada bloqueando adição, inclusive o caso Manaus aberta / São Paulo fechada em `2026-11-23T01:30:00Z` (grade 10:00–22:00);
+  - Cupom com limite por cliente no checkout convidado mostra o pedido de login e não limpa a sacola; cupom sem limite por cliente segue;
   - Validação Zod do checkout (CEP, telefone, troco menor que total rejeitado, aceite legal obrigatório ao criar conta).
 - [ ] **E2E (Cypress — viewports `375x812`, `768x1024`, `1440x900`):**
   - Busca FTS sem acento e com typo;
   - Montagem de sacola com adicional obrigatório + observação + reload mantendo sacola;
   - CEP fora da área bloqueando avanço antes do pagamento;
+  - Convidado aplica cupom com limite por cliente, vê *"Este cupom tem limite por cliente. Entre na sua conta para usá-lo."* e a sacola continua; o mesmo cupom passa depois do login; cupom sem limite por cliente fecha como convidado;
   - Checkout completo como convidado com **Pix mocado** (incluindo proteção contra clique duplo via `Idempotency-Key`, aprovação + comprovante `#001`) e com **Cartão mocado** (recusa → retentativa aprovada);
   - Checkout **Retirada** (frete zero) + pagamento na retirada;
   - Cancelamento autônomo antes da confirmação (com estorno de cupom) e bloqueio após confirmação;

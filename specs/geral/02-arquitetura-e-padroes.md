@@ -1,6 +1,6 @@
 # Spec Geral 02 — Arquitetura, Padrões de Projeto, IDs e Segurança
 
-> **Documento autocontido.** Define as diretrizes arquiteturais obrigatórias para backend e frontends do Menu Chef: Clean Architecture, CQRS, SOLID, Object Calisthenics, Design Patterns com critérios objetivos de uso, estratégia de identificadores (`UUIDv7`), paginação 100% Cursor Opaco + Keyset, segurança de sessão (`HttpOnly`, zero `localStorage`), defesa contra SQL Injection, cache/invalidação Redis (`redis-state` + `redis-cache`), idempotência (`Idempotency-Key`), concorrência atômica de cupons, **Transactions & Locks (`pg_advisory_xact_lock`, Optimistic Locking, Split-Tx)**, contratos OpenAPI 3.1 (`Huma v2`) e LGPD B2B2C.
+> **Documento autocontido.** Define as diretrizes arquiteturais obrigatórias para backend e frontends do Menu Chef: Clean Architecture, CQRS, SOLID, Object Calisthenics, Design Patterns com critérios objetivos de uso, estratégia de identificadores (`UUIDv7`), paginação 100% Cursor Opaco + Keyset, segurança de sessão (`HttpOnly`, zero `localStorage`), defesa contra SQL Injection e IDOR multi-tenant, **uma instância Redis** (sessão, Pub/Sub, rate-limit e cache), **fuso IANA da filial**, idempotência (`Idempotency-Key`), concorrência atômica de cupons, **Transactions & Locks (`pg_advisory_xact_lock`, Optimistic Locking, Split-Tx)**, contratos OpenAPI 3.1 (`Huma v2`) e LGPD B2B2C. Modelo comercial: **sem comissão, apenas mensalidade** (não existe taxa da plataforma por pedido ou por pagamento).
 
 ---
 
@@ -85,6 +85,7 @@ Aplicado no nível de **Application / Data Access** (sem bancos físicos separad
    - `Money` (centavos inteiros, nunca negativo para preço);
    - `CEP` (normalizado 8 dígitos numéricos, validação de formato e comparação de faixas);
    - `PhoneBR` (normalizado E.164/DDD+número);
+   - `IANATimezone` (nome IANA carregável, default `America/Sao_Paulo`);
    - `Email`, `Slug`, `OrderStatus` (máquina de estados com método `CanTransitionTo(next)`).
 4. **Coleções encapsuladas no domínio:** ex., `OrderItems` garante que não existe pedido vazio, que adicionais obrigatórios foram preenchidos e calcula o subtotal de forma consistente.
 5. **Métodos curtos e coesos:** alvo de até ~30 linhas por função; funções de validação e cálculo puras, sem I/O misturado.
@@ -117,8 +118,23 @@ Aplicado no nível de **Application / Data Access** (sem bancos físicos separad
 
 ### Padrão Híbrido Obrigatório do Menu Chef
 1. **Primary Key de todas as entidades (`id`):** **`UUIDv7`** (`uuid PRIMARY KEY DEFAULT uuidv7()` no PostgreSQL 19.0; gerado no domínio Go via `uuid.NewV7()`).
-2. **Identificador humano do pedido (`display_number`):** **`INTEGER` sequencial por filial** (ex.: `#101`, `#102`, reiniciável ou contínuo por filial com constraint `UNIQUE (branch_id, display_number, business_date)`). A cozinha e o balcão nunca leem um UUID de 36 caracteres.
+2. **Identificador humano do pedido (`display_number`):** **`INTEGER` sequencial por filial** (ex.: `#101`, `#102`) com constraint `UNIQUE (branch_id, display_number, business_date)`. `business_date` é a data civil de `created_at` no fuso IANA da filial, não a data UTC. A cozinha e o balcão nunca leem um UUID de 36 caracteres.
 3. **Tokens, sessões, convites e links públicos de acompanhamento (`tracking_token`):** **NUNCA usar `UUIDv7`** (por conter timestamp). Gerar com `crypto/rand` (mínimo 32 bytes → base64url sem padding = 256 bits de entropia) e armazenar apenas o hash SHA-256 no banco para convites/tokens de uso único.
+
+### 6.1 Fuso da filial (IANA) e instantes em UTC
+
+`branches.timezone` é `TEXT NOT NULL DEFAULT 'America/Sao_Paulo'`. O valor é nome IANA (`America/Sao_Paulo`, `America/Manaus`, `America/Noronha`, `America/Cuiaba`). Offset cru (`-04:00`) e apelido (`Brasilia`) são rejeitados pelo Value Object `IANATimezone` (`time.LoadLocation`) antes de persistir.
+
+`opening_hours_json` guarda relógio de parede da filial, sem offset (`{"mon":[{"open":"10:00","close":"22:00"}]}`). Faixa que cruza a meia-noite (18:00–02:00) é avaliada nesse fuso. "Aberto agora", o texto de abre/fecha, a mensagem de reabertura depois da pausa, o dia do dashboard e o horário da comanda e do comprovante usam esse fuso. A pausa em si é imediata e não depende do relógio.
+
+Instantes (`created_at`, `confirmed_at`, `expires_at`, auditoria) continuam `timestamptz` em UTC. Não usar `timestamp without time zone` para evento. O processo da API roda com `TZ=UTC`; a imagem traz `tzdata` completo. A conversão é explícita (`created_at AT TIME ZONE branches.timezone` ou `time.LoadLocation`). Nunca `time.Local`.
+
+`orders.business_date` é `(created_at AT TIME ZONE branches.timezone)::date`. Ela entra na unicidade do `display_number` e no corte de "pedidos do dia". O payload público da filial traz `timezone`, `is_open` e o próximo horário já calculados no servidor. O browser formata o relógio com esse fuso; não é a fonte de verdade do "aberto agora".
+
+Casos que a implementação tem de cobrir, com relógio injetável:
+1. Grade 10:00–22:00. Instante `2026-11-23T01:30:00Z`: Manaus (`UTC−4`) está em 21:30 do dia 22 e **aberta**; São Paulo (`UTC−3`) está em 22:30 do dia 22 e **fechada**.
+2. Virada do dia. Pedido `created_at = 2026-11-23T03:30:00Z`: `business_date` em Manaus é `2026-11-22` (23:30); em São Paulo é `2026-11-23` (00:30). O dashboard do dia 23 inclui o pedido só na filial de São Paulo.
+3. Criar filial sem `timezone` grava `America/Sao_Paulo`. `GMT-4` e `Brasilia` voltam `422`.
 
 ---
 
@@ -187,33 +203,67 @@ No Menu Chef, um usuário troca de **empresa e filial** frequentemente e pode te
    - Role `menuchef_app`: usada pela API em runtime com permissão restrita a `SELECT, INSERT, UPDATE, DELETE` nas tabelas da aplicação (sem `CREATE/DROP/ALTER`, sem superuser).
 
 ### Demais Controles OWASP Obrigatórios
-- **Broken Access Control (Multi-tenant IDOR):** todo comando/query de filial exige `branch_id` resolvido e validado pelo middleware de autorização contra o vínculo do usuário; queries SQL **sempre** incluem `WHERE branch_id = $1` (nunca buscar pedido/produto apenas por `id` sem escopo de tenant/filial).
+- **Broken Access Control (Multi-tenant IDOR):** todo comando/query de filial exige `branch_id` resolvido e validado pelo middleware de autorização contra o vínculo do usuário. Query de tabela multi-tenant **sempre** traz predicado `branch_id` ou `company_id` (nunca buscar pedido, produto, cupom ou pagamento só por `id`). O gate de CI percorre os arquivos `sqlc` e quebra o build se o predicado faltar fora da allowlist. Teste de integração semeia **duas empresas** e confirma que UUID da empresa B, chamado com sessão da empresa A, não devolve corpo da B.
+- **RLS do PostgreSQL fica fora do MVP.** O isolamento deste ciclo é aplicação + gate + teste de IDOR. Não criar `ENABLE ROW LEVEL SECURITY` nem policy nas migrations. Reavaliar depois, com o gate já verde. Não é parte do desenho atual.
+- **Vínculo único:** `memberships` usa `UNIQUE NULLS NOT DISTINCT (user_id, company_id, branch_id)` (PostgreSQL 15+; o projeto está no 19). `company_owner` grava `branch_id` NULL; os outros papéis gravam `branch_id` NOT NULL, reforçado por `CHECK`. Sem `NULLS NOT DISTINCT`, dois owners da mesma pessoa na mesma empresa passariam, porque `NULL` não colide em `UNIQUE` comum. Índices parciais equivalentes, se um gerador não emitir a cláusula: `UNIQUE (user_id, company_id) WHERE branch_id IS NULL` e `UNIQUE (user_id, company_id, branch_id) WHERE branch_id IS NOT NULL`. Revogação é `UPDATE` de `status` na mesma linha.
 - **Validação de Payload & Limites:** limite de tamanho de body (`http.MaxBytesReader`, ex.: 1 MiB para JSON, 5 MiB para upload de imagem), validação estrita de schema (Go validator / Zod nos frontends) e rejeição de campos desconhecidos em payloads críticos.
-- **Rate Limiting:** no Traefik v3 (global por IP) e em Redis na API para rotas sensíveis (`/auth/login`, `/public/leads`, `/public/orders`, `/auth/invite/accept`).
+- **Rate Limiting:** no Traefik v3 (global por IP) e na mesma instância Redis da API (prefixo `mc:rl:`, TTL igual à janela) para rotas sensíveis (`/auth/login`, `/public/leads`, `/public/orders`, `/auth/invite/accept`).
 - **Upload Seguro de Imagens:** validar *magic bytes* reais do arquivo (nunca confiar apenas na extensão ou `Content-Type`), decodificar/re-encodar para **WebP** removendo metadados EXIF, e salvar com chave gerada pelo servidor (`UUIDv7` + `.webp`).
 - **Segredos:** 100% via variáveis de ambiente / Docker secrets; nunca versionados no Git.
 
 ---
 
-## 10. Estratégia de Cache & Invalidação no Redis (2 Instâncias Isoladas)
+## 10. Redis — uma instância (sessão, Pub/Sub, rate-limit e cache)
 
-> **Decisão fechada:** separar estado crítico de cache efêmero em **duas instâncias leves de Redis** (`redis-state` e `redis-cache`), evitando que pressão de memória do cache de cardápios expulse sessões de cozinha no pico do sábado à noite.
+> **Decisão fechada:** uma única instância Redis 8. O dono do produto dispensou a separação `redis-state` + `redis-cache`. O resto da stack permanece.
 
-| Instância | Papel | Política de Memória & Persistência |
+Sessão opaca, Pub/Sub do SSE, rate-limit e cache de leitura convivem no mesmo processo. A separação é por **prefixo de chave** (e por canal, no Pub/Sub), não por instância. Há um único `*redis.Client` em `internal/platform/redis`. Dois clients apontando para o mesmo servidor não recriam o isolamento antigo.
+
+### Por que `volatile-ttl` e sessão com TTL de 24h
+
+`maxmemory-policy volatile-ttl`. Essa política só despeja chave que tem TTL, e escolhe a que expira primeiro.
+
+- `allkeys-lru` e `allkeys-lfu` podem apagar a sessão da cozinha no pico. Ficam de fora.
+- `noeviction` não apaga nada e passa a recusar `SET` quando a memória enche. Login novo e cache caem juntos. Fica de fora.
+- `volatile-lru` também só olha chave com TTL, mas escolhe a menos usada. No sábado o cardápio é tão quente quanto a sessão do balcão, e a sessão entra no sorteio. Fica de fora.
+- Sessão sem TTL ficaria imune ao despejo e também à limpeza: um logout perdido vira chave eterna. Quando a memória só tiver chave sem expire, o Redis recusa escrita. Fica de fora.
+
+Com `volatile-ttl`, rate-limit (TTL da janela, dezenas de segundos) e cache (60s a 5 min) saem antes de uma sessão que ainda tem horas. A sessão usa o lifetime absoluto de 24 horas do `alexedwards/scs`, no prefixo `mc:sess:`. Um turno a partir do login cabe nesse prazo. Logout, revogação de vínculo e suspensão da empresa fazem `UNLINK` na hora, sem esperar as 24h.
+
+Efeito aceito: se a memória estourar, a janela de rate-limit da API pode ser esquecida cedo. O limite por IP do Traefik continua na frente. O cardápio recompõe pelo Postgres no próximo miss.
+
+### Convivência na mesma instância
+
+| Uso | Chave ou canal | TTL |
 | :--- | :--- | :--- |
-| **`redis-state`** | Sessões opacas `alexedwards/scs`, Pub/Sub SSE, rate limiting | `maxmemory-policy noeviction` + AOF (`appendonly yes`, `appendfsync everysec`) |
-| **`redis-cache`** | Cache de leitura descartável (cardápio da filial, metadados/horários, permissões RBAC) | `maxmemory-policy allkeys-lru` + `maxmemory` explícito, sem persistência em disco (`save ""`) |
+| Sessão opaca `scs` | `mc:sess:{id}` | 24h (lifetime absoluto) |
+| Cache de cardápio | `mc:cache:menu:branch:{branch_id}:v1` | 5 min ± 15% |
+| Cache de meta, horário e "aberto agora" | `mc:cache:branch:slug:{slug}:v1` | 60 s ± 15% |
+| Cache de RBAC | `mc:cache:rbac:user:{user_id}:v1` | 2 min ± 15% |
+| Rate limit | `mc:rl:{rota}:{sujeito}` | duração da janela |
+| Pub/Sub da fila | canal `mc:ps:branch:{branchId}:orders` | não é chave |
+| Pub/Sub do pedido | canal `mc:ps:order:{trackingToken}` | não é chave |
+
+Pub/Sub não grava a mensagem em chave, então não entra no `maxmemory` de dados. O buffer de cliente fica em `client-output-buffer-limit pubsub 32mb 8mb 60`.
+
+O helper de cache recusa `SET` sem TTL (erro de programação, com teste de unidade). Nenhuma chave da aplicação nasce sem expire.
+
+### Persistência e teto
+
+`appendonly yes`, `appendfsync everysec`, `save ""` (sem snapshot RDB, para evitar o fork no pico). O AOF também registra escrita de cache. No volume do MVP esse custo é aceito. Depois de um restart, chave de cache pode voltar até o TTL acabar; o `UNLINK` de invalidação que já ocorreu também está no AOF.
+
+`maxmemory 256mb` no MVP, via `REDIS_MAXMEMORY`. É um teto só, compartilhado pelos quatro usos.
+
+### Falha
+
+Não existe mais o modo "o cache caiu e a sessão ficou". Se o Redis não responde, `GET /api/v1/health/ready` falha. Leitura de cardápio público cai no Postgres. Login, sessão, SSE e rate-limit da API ficam indisponíveis até o Redis voltar.
 
 ### Regras de Cache-Aside & Invalidação
-1. **O que entra no `redis-cache` (com TTL + jitter aleatório de ±15% para evitar *thundering herd*):**
-   - Cardápio público ativo da filial (`mc:menu:branch:{branch_id}:v1`) — TTL base 5 min.
-   - Metadados públicos / status aberto-pausado da filial (`mc:branch:slug:{slug}:v1`) — TTL base 60 s.
-   - Mapa de permissões/vínculos RBAC por usuário (`mc:rbac:user:{user_id}:v1`) — TTL base 2 min.
-2. **O que NUNCA é cacheado no fluxo de escrita (sempre lido do PostgreSQL 19 em transação):**
-   - Validação de disponibilidade/preço no checkout, faixas de CEP no fechamento do pedido, saldos/limites de cupom, máquina de estados do pedido e fila operacional da cozinha.
-3. **Invalidação explícita pós-commit (`UNLINK` não-bloqueante):** todo Command que altera catálogo, horário/pausa da filial ou vínculo RBAC executa `UNLINK` das chaves afetadas **somente após `tx.Commit()` bem-sucedido** no PostgreSQL (nunca antes do commit, evitando repopular o cache com dado antigo).
-4. **Proteção contra *Cache Stampede*:** todas as leituras cacheadas no Decorator Go passam por `golang.org/x/sync/singleflight`, colapsando requisições concorrentes pela mesma chave em uma única query ao PostgreSQL.
-5. **Degradação graciosa:** falha temporária no `redis-cache` registra log estruturado + métrica e faz *fallback* transparente ao PostgreSQL sem derrubar o storefront.
+1. **O que entra no cache (prefixo `mc:cache:`, TTL obrigatório + jitter de ±15% contra *thundering herd*):** cardápio público, meta/horário/"aberto agora" da filial e mapa de RBAC, com as chaves da tabela acima.
+2. **O que nunca é cacheado no fluxo de escrita (sempre lido do PostgreSQL 19 em transação):** disponibilidade e preço no checkout, faixas de CEP no fechamento, saldos e limites de cupom, máquina de estados do pedido e fila operacional da cozinha.
+3. **Invalidação explícita pós-commit (`UNLINK` não-bloqueante):** todo Command que altera catálogo, horário, pausa, fuso ou vínculo RBAC executa `UNLINK` das chaves afetadas **somente após `tx.Commit()`** (nunca antes, para não repopular o cache com dado antigo).
+4. **Proteção contra *cache stampede*:** leituras cacheadas passam por `golang.org/x/sync/singleflight`.
+5. **Degradação da leitura de cache:** erro pontual de `GET` no prefixo `mc:cache:` registra log estruturado + métrica e faz fallback ao PostgreSQL. Isso não mantém a sessão de pé se o processo Redis inteiro caiu.
 
 ---
 
@@ -247,7 +297,13 @@ Cliques duplos em rede 4G instável ou retentativas de checkout **nunca** podem 
      RETURNING id, discount_type, discount_value, min_order_cents, max_uses_per_customer;
      ```
      Zero linhas retornadas → aborta transação com `409 Conflict` (`COUPON_UNAVAILABLE_OR_EXHAUSTED`).
-  2. Para limite por cliente (`max_uses_per_customer`), adquirir **`pg_advisory_xact_lock`** na chave `(LockNSCouponCustomer, hash(coupon_id, customer_identifier_hash))` (evitando *phantom read* em `READ COMMITTED` sem serializar clientes distintos do mesmo cupom), validar o total em `coupon_redemptions` e registrar o consumo com `UNIQUE (coupon_id, order_id)`.
+  2. **Limite por cliente (decisão do dono em 23/11/2026, opção b).** Só entra se `max_uses_per_customer` não for nulo.
+     - O identificador é `customer_user_id` da conta logada. Não se usa hash de telefone. A coluna `customer_identifier_hash` **não existe**: ela só serviria para marcar convidado, e essa opção foi recusada. Manter a coluna reabriria a opção (a).
+     - Convidado (pedido sem `customer_user_id`) recebe `422 Unprocessable Entity` (`COUPON_REQUIRES_ACCOUNT`), detalhe *"Este cupom tem limite por cliente. Entre na sua conta para usá-lo."* A transação não incrementa `used_count` e não insere resgate. A sacola permanece.
+     - Cliente logado: `pg_advisory_xact_lock` na chave `(LockNSCouponCustomer, hash(coupon_id, customer_user_id))`. O lock evita *phantom read* em `READ COMMITTED` sem serializar outros clientes do mesmo cupom. Conta as linhas em `coupon_redemptions` com aquele par. Se a contagem já atingiu `max_uses_per_customer`, aborta com `409 Conflict` (`COUPON_CUSTOMER_LIMIT_REACHED`).
+     - O resgate grava `customer_user_id` e `UNIQUE (coupon_id, order_id)`. Não há `UNIQUE (coupon_id, customer_user_id)`: o limite pode ser maior que 1, e o lock mais a contagem é que impõem o teto.
+     - Cupom com `max_uses_per_customer` nulo segue disponível para convidado e para conta logada. O resgate de convidado deixa `customer_user_id` nulo. O de conta logada preenche o id, sem aplicar teto por pessoa.
+     - Verificação de telefone por código, via **WhatsApp Business API oficial**, fica fora do MVP. Não substitui a conta logada neste ciclo.
 - **Estorno automático de cupom (regra de negócio fechada):** sempre que um pedido com cupom transicionar para `canceled_by_customer` (antes de `confirmed`), `rejected_by_store` ou expiração de Pix mocado, a mesma transação de mudança de status executa:
   - `DELETE FROM coupon_redemptions WHERE order_id = $1 RETURNING coupon_id;`
   - Somente se uma linha foi deletada (idempotente contra estorno duplo), executa `UPDATE coupons SET used_count = GREATEST(used_count - 1, 0) WHERE id = $1;`.
@@ -266,7 +322,7 @@ Cliques duplos em rede 4G instável ou retentativas de checkout **nunca** podem 
 | **Cupom global (`max_uses`)** | **Atomic Conditional `UPDATE`** (`WHERE ... AND (max_uses IS NULL OR used_count < max_uses)`) | 1 único statement atômico; dispensa `SELECT FOR UPDATE` |
 | **Número curto da filial (`display_number`)** | Upsert atômico em `branch_order_counters` executado **por último** na transação do pedido | Segura o row lock da filial por < 1–2 ms, minimizando contenção no pico |
 | **Workers de fila / expiração em lote de Pix** | **`SELECT ... FOR UPDATE SKIP LOCKED`** | Múltiplas réplicas processam lotes em paralelo sem bloqueio |
-| **Cupom por cliente (`max_uses_per_customer`)** | **`pg_advisory_xact_lock`** na chave `(LockNSCouponCustomer, hash(coupon_id, customer_hash))` | Protege check-then-insert sem linha prévia, travando apenas aquele cliente no cupom |
+| **Cupom por cliente (`max_uses_per_customer`)** | Conta logada obrigatória. **`pg_advisory_xact_lock`** em `(LockNSCouponCustomer, hash(coupon_id, customer_user_id))` e contagem em `coupon_redemptions` | Decisão de 23/11/2026. Convidado recebe `422 COUPON_REQUIRES_ACCOUNT`. Sem hash de telefone |
 | **Jobs cron singleton** (retenção LGPD, limpeza `idempotency_keys`/leads) | **`pg_try_advisory_xact_lock(LockNSCronJob, job_id)`** (non-blocking) | Garante execução única entre múltiplas réplicas Go sem depender de lock distribuído no Redis |
 | **Reordenação em lote de cardápio / CEP da filial** | **`pg_advisory_xact_lock(LockNSBranchCatalog, branch_hash)`** | Evita *interleaving* em edições administrativas multi-linha simultâneas |
 
@@ -277,7 +333,7 @@ Cliques duplos em rede 4G instável ou retentativas de checkout **nunca** podem 
    - `lock_timeout` (`55P03`) e `statement_timeout` (`57014`) emitem `ERROR` (conexão volta saudável ao `pgxpool` após rollback). `transaction_timeout` (`25P04`) emite `FATAL` e derruba a conexão TCP — usado apenas como rede de segurança extrema.
    - Overrides pontuais dentro de uma transação usam **sempre `SET LOCAL`** (pipelineado em `pgx.Batch` com `pg_advisory_xact_lock` em 1 round-trip); **nunca `SET` sem `LOCAL`** no `pgxpool`.
 3. **Split-Transaction — ZERO I/O externo dentro de `BEGIN ... COMMIT`:** jamais chamar `PaymentGatewayPort`, Garage S3 ou Web Push com transação/lock aberto. Para pagamento online: **Tx 1** (curta) persiste `order` (`awaiting_payment`) + `payment` (`pending`) e faz `COMMIT` → chama `PaymentGatewayPort` fora da tx → **Tx 2** (curta) persiste resultado (ou estorna cupom em recusa) e faz `COMMIT`.
-4. **Publicação SSE pós-commit (YAGNI no MVP):** eventos de pedido são publicados no `redis-state` Pub/Sub **somente após `tx.Commit()`** bem-sucedido, complementados por **snapshot inicial do banco** na conexão/reconexão SSE (sem tabela extra de Outbox no MVP; evolução para Transactional Outbox com `SKIP LOCKED` reservada para integrações/webhooks pós-MVP).
+4. **Publicação SSE pós-commit (YAGNI no MVP):** eventos de pedido são publicados no Pub/Sub da instância Redis única (canais `mc:ps:`) **somente após `tx.Commit()`** bem-sucedido, complementados por **snapshot inicial do banco** na conexão/reconexão SSE (sem tabela extra de Outbox no MVP; evolução para Transactional Outbox com `SKIP LOCKED` reservada para integrações/webhooks pós-MVP).
 5. **Prevenção de Deadlocks & Observabilidade PG 19:** adquirir múltiplos locks sempre em ordem determinística (chaves ordenadas / `ORDER BY id`), preferir `FOR NO KEY UPDATE` quando não alterar PK/UNIQUE, aproveitar `log_lock_waits = on` (default no PG 19) e monitorar a view nativa **`pg_stat_lock`** (incluindo `locktype = 'advisory'`) e erros `55P03`/`40P01`.
 
 ---
@@ -304,7 +360,7 @@ Cliques duplos em rede 4G instável ou retentativas de checkout **nunca** podem 
 - **Ledger de aceite (`legal_acceptances`):** registro imutável (`actor_type`, `actor_id`, `document_type`, `document_version`, `accepted_at`, `ip_hash`, `user_agent`) gravado no envio de lead, aceite de convite da empresa e criação de conta opcional do cliente.
 - **Direitos do titular no MVP (Cliente autenticado):**
   - **Portabilidade / Acesso:** `GET /api/v1/customer/privacy/export` retorna JSON estruturado com perfil, endereços salvos, aceites legais e histórico de pedidos do titular.
-  - **Eliminação / Anonimização:** `POST /api/v1/customer/privacy/delete-account` revoga todas as sessões ativas no `redis-state`, remove endereços salvos, anonimiza PII do perfil e pedidos históricos (`"Cliente Anonimizado"`, telefone/e-mail substituídos por hash irreversível), **preservando intactos os itens, valores e métricas financeiras da filial**.
+  - **Eliminação / Anonimização:** `POST /api/v1/customer/privacy/delete-account` revoga todas as sessões ativas no Redis (`UNLINK` em `mc:sess:`), remove endereços salvos, anonimiza PII do perfil e pedidos históricos (`"Cliente Anonimizado"`, telefone/e-mail substituídos por hash irreversível), **preservando intactos os itens, valores e métricas financeiras da filial**. A exclusão de conta não estorna cupom: a linha em `coupon_redemptions` continua apontando para o `customer_user_id` anonimizado. Uma conta nova é outro id e, no MVP, não herda esse consumo. Fechar esse desvio é papel da verificação de telefone via WhatsApp Business API oficial, fora do MVP.
 - **Retenção & Minimização:** `idempotency_keys` purgadas após 24h; tokens de convite expirados purgados após 7 dias; leads inativos após 24 meses; logs `slog` sempre com redaction de PII sensível.
 
 ---
@@ -316,7 +372,9 @@ Cliques duplos em rede 4G instável ou retentativas de checkout **nunca** podem 
 - [ ] 100% dos endpoints de listagem usam **Cursor Opaco + Keyset Pagination** (`LIMIT page_size + 1`, zero `OFFSET`, zero `COUNT(*)`), com testes validando ausência de *row drift* e rejeição de cursor inválido (`400 INVALID_CURSOR`).
 - [ ] Nenhum arquivo de frontend referencia `localStorage` ou `sessionStorage` para tokens/sessões.
 - [ ] `pgxpool` configurado com `RuntimeParams` (`lock_timeout < idle_in_transaction_session_timeout < statement_timeout < transaction_timeout`), zero uso de `pg_advisory_lock` session-level e zero I/O externo dentro de transações SQL (Split-Tx).
-- [ ] `redis-state` (`noeviction` + AOF) e `redis-cache` (`allkeys-lru` + `singleflight` + invalidação `UNLINK` pós-commit) configurados e testados separadamente.
-- [ ] Testes de integração validam: idempotência em 3 estados (`409`/`422`/`201`), concorrência de cupons (global 50 goroutines + `pg_advisory_xact_lock` por cliente + estorno automático), corrida de transição de pedido (cancelar vs confirmar → exatamente 1 vence e o outro recebe `409`), sobreposição de CEP (`23P01` → `409`) e direitos LGPD (exportação JSON + anonimização preservando faturamento da filial).
+- [ ] Uma instância Redis com AOF, `maxmemory-policy volatile-ttl`, prefixos `mc:sess:` / `mc:cache:` / `mc:rl:`, canais `mc:ps:`, helper de cache que recusa `SET` sem TTL, `singleflight` e `UNLINK` pós-commit. Teste de pressão com `maxmemory` baixo despeja cache de TTL curto e preserva sessão com TTL de 24h.
+- [ ] Testes de integração validam: idempotência em 3 estados (`409`/`422`/`201`); concorrência de cupom global (50 goroutines); limite por cliente só com `customer_user_id` (convidado → `422 COUPON_REQUIRES_ACCOUNT`; segundo uso além do teto → `409 COUPON_CUSTOMER_LIMIT_REACHED`; cupom sem teto por cliente segue para convidado); estorno automático; corrida de transição de pedido (cancelar vs confirmar → exatamente 1 vence e o outro recebe `409`); sobreposição de CEP (`23P01` → `409`); fuso de Manaus na virada do dia; segundo `company_owner` com `branch_id` nulo rejeitado (`23505`); direitos LGPD (exportação JSON + anonimização preservando faturamento da filial).
 - [ ] Gate de CI valida **zero drift** entre `go run ./cmd/api openapi`, `openapi-typescript` e `tsc --noEmit` nos 3 frontends.
-- [ ] Testes automatizados de segurança validam: tentativa de SQLi em busca FTS e filtros dinâmicos, tentativa de acesso cross-tenant (`403`/`404`) e requisição cross-origin sem `Sec-Fetch-Site: same-origin` rejeitada com `403`.
+- [ ] Gate de CI percorre as queries `sqlc` de tabelas multi-tenant e falha se faltar predicado `branch_id` ou `company_id` fora de `apps/api/queries/tenant_scope_allowlist.txt` (motivo obrigatório em cada linha).
+- [ ] Testes automatizados de segurança validam: tentativa de SQLi em busca FTS e filtros dinâmicos; IDOR entre **duas empresas** (UUID da outra não vaza corpo; id inexistente e id de outro tenant no mesmo escopo devolvem o mesmo status); requisição cross-origin sem `Sec-Fetch-Site: same-origin` rejeitada com `403`.
+- [ ] Migrations, OpenAPI e extrato não têm coluna `platform_fee_cents` nem `customer_identifier_hash`. RLS do Postgres não é ligado neste ciclo.

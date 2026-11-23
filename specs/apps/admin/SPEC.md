@@ -75,7 +75,7 @@ Colunas espelhando exatamente os nomes que o cliente vê:
 
 ### 4.3 Impressão de Comanda (1-Clique — MVP)
 - Botão **"Imprimir comanda"** no cartão e no detalhe do pedido abre layout dedicado via `window.print()` com folha CSS `@media print` configurável para **58mm** ou **80mm** (preferência da filial).
-- Layout térmico monocromático de alto contraste: nome da filial, **`#042`** em fonte grande, data/hora, modalidade (ENTREGA + endereço completo ou RETIRADA), lista de itens com **adicionais indentados** e **OBSERVAÇÕES EM NEGRITO/CAIXA ALTA**, forma de pagamento (PAGO vs A RECEBER + troco).
+- Layout térmico monocromático de alto contraste: nome da filial, **`#042`** em fonte grande, data/hora no fuso da filial, modalidade (ENTREGA + endereço completo ou RETIRADA), lista de itens com **adicionais indentados** e **OBSERVAÇÕES EM NEGRITO/CAIXA ALTA**, forma de pagamento (PAGO vs A RECEBER + troco). Sem linha de taxa da plataforma.
 - *Impressão silenciosa automática via agente local/WebSerial fica documentada para marco pós-MVP.*
 
 ---
@@ -98,13 +98,13 @@ Baseada nas limitações reais dos navegadores em 2026:
 ## 6. Módulos de Gestão da Filial & Dashboard
 
 1. **Cardápio & Promoções:** tabela densa (TanStack Table v9) agrupada por categoria com edição rápida de preço, **switch imediato de "Disponível / Esgotado"** (1 clique no meio do jantar), gestão de grupos de adicionais (min/max/obrigatório) e upload de foto (preview + validação de tamanho/formato → backend converte e salva em **WebP**).
-2. **Horários & Pausa de Emergência:** grade semanal de abertura/fechamento + **botão de destaque "Pausar recebimento de pedidos"** no topo do painel com motivo rápido (Chuva, Forno/Equipamento, Fila cheia).
+2. **Horários, fuso e pausa de emergência:** grade semanal de abertura/fechamento em relógio de parede + seletor de fuso IANA (`America/Sao_Paulo` como default, `America/Manaus` entre as opções; offset cru é rejeitado) + **botão de destaque "Pausar recebimento de pedidos"** no topo do painel com motivo rápido (Chuva, Forno/Equipamento, Fila cheia). O "aberto agora" que a loja vê é o mesmo cálculo do storefront, no fuso da filial.
 3. **Frete (Fixo ou Faixas de CEP):** alternância clara entre frete fixo ou tabela de faixas (`CEP inicial`, `CEP final`, `Valor`, `Tempo estimado`, `Ativa`), com validação imediata de faixa inválida ou sobreposta (formulário tabular rápido, sem peso de mapa no MVP).
-4. **Cupons:** formulário enxuto (`Código`, `Tipo`: valor fixo / percentual / frete grátis, `Pedido mínimo`, `Validade`, `Limite total de usos`, `Limite por cliente`, `Ativo`), exibindo contagem real de usos (`used_count / max_uses`).
+4. **Cupons:** formulário enxuto (`Código`, `Tipo`: valor fixo / percentual / frete grátis, `Pedido mínimo`, `Validade`, `Limite total de usos`, `Limite por cliente`, `Ativo`), exibindo contagem real de usos (`used_count / max_uses`). O campo **Limite por cliente** traz a ajuda: *"Só quem tem conta logada consegue usar. Convidado vê um pedido para entrar. Vazio = vale para todo mundo."* Decisão do dono em 23/11/2026. O identificador é a conta, não o telefone.
 5. **Equipe da Filial:** lista de pessoas com papel na filial, envio de convite por e-mail (se a pessoa já tem conta no Menu Chef em outra loja, apenas vincula à nova filial sem criar nova senha!) e revogação instantânea de acesso.
 6. **Dashboard Operacional & Extrato:**
-   - Filtro por período (Hoje, 7 dias, 30 dias, personalizado) com cards: **Pedidos concluídos**, **Faturamento bruto**, **Ticket médio**, **Entrega vs Retirada** e **Top 10 produtos** (os totais permanecem íntegros mesmo quando clientes finais exercem exclusão/anonimização LGPD).
-   - **Extrato transparente de pagamentos online (Mocado no MVP):** lista por pedido mostrando valor, método (`Pix mocado` / `Cartão mocado`), taxa da plataforma (zero em pagamentos na entrega) e status de liquidação — respondendo diretamente à dor de repasse opaco da pesquisa.
+   - Filtro por período (Hoje, 7 dias, 30 dias, personalizado). **Hoje** é a data civil no fuso da filial: um pedido às `2026-11-23T03:30:00Z` entra no dia 23 em São Paulo e no dia 22 em Manaus. Cards: **Pedidos concluídos**, **Faturamento bruto** (soma dos pedidos, sem desconto de comissão — não há comissão), **Ticket médio**, **Entrega vs Retirada** e **Top 10 produtos** (os totais permanecem íntegros mesmo quando clientes finais exercem exclusão/anonimização LGPD).
+   - **Extrato de pagamentos online (mocado no MVP):** lista por pedido com valor, método (`Pix mocado` / `Cartão mocado`) e status. Não há coluna de taxa da plataforma. O texto de apoio diz que o Menu Chef cobra só a mensalidade. Quando existir gateway real, taxa do provedor, se mostrada, leva o rótulo de taxa do provedor.
 7. **Padrão Único de Paginação nas Tabelas (TanStack Table v9 + Cursor Opaco):**
    - Todas as tabelas do painel (Pedidos históricos, Cardápio, Faixas de CEP, Cupons, Equipe, Extrato, Leads, Empresas, Aceites Legais e Auditoria) usam **Cursor Pagination opaco** (`?cursor=&limit=`) integrado ao **TanStack Table v9** (`useTable` + `manualPagination: true` + `pageCount: -1`) e **TanStack Query v5 (`useInfiniteQuery`)**.
    - Controles de navegação: **"Anterior"** e **"Próxima"** (sem botão "Última página" e sem `COUNT(*)` pesado); páginas já visitadas ficam no cache do `useInfiniteQuery` para retorno instantâneo.
@@ -150,7 +150,8 @@ Acesso restrito a usuários com `is_platform_admin = true` (verificado no servid
 - [ ] **Unitários (Vitest + RTL + MSW):**
   - Controle de renderização por papel RBAC (`kitchen_operator` não vê menus financeiros/equipe);
   - Troca de contexto limpa estado da filial anterior e atualiza URL;
-  - Validação Zod de faixas de CEP, cupons (`max_uses` e `max_uses_per_customer`), preços em centavos, aceite legal obrigatório em `/convite/$token` e recusa com motivo obrigatório;
+  - Validação Zod de faixas de CEP, cupons (`max_uses` e `max_uses_per_customer`, com o texto de ajuda de conta logada), fuso IANA, preços em centavos, aceite legal obrigatório em `/convite/$token` e recusa com motivo obrigatório;
+  - "Hoje" do dashboard usa a data civil da filial (virada Manaus × São Paulo em `2026-11-23T03:30:00Z`);
   - Hooks de SSE reconexão, Wake Lock fallback e controle do tour React Joyride v3 (`onEvent`).
 - [ ] **Contrato OpenAPI & Type-check:** zero drift entre tipos gerados por `openapi-typescript` (`openapi-fetch`) e `tsc --noEmit`.
 - [ ] **PWA Audit:**
