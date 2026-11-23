@@ -29,4 +29,4 @@ A skill [Web Interface Guidelines](https://github.com/vercel-labs/web-interface-
 - Tabela curta do que está na mensalidade e do que não está. Goomer e Cardápio Web já sofrem quando isso fica escondido.
 - Sem carrossel de depoimento automático. Movimento que ninguém pediu atrapalha, e o reduced motion teria de desligar.
 
-O protótipo [prototipos/landing/](prototipos/landing/) só testa hierarquia e a paleta. Não tem formulário de contratação.
+O protótipo [prototipos/landing/](prototipos/landing/) agora segue um roteiro de quatro cenas, com GSAP e Lenis só quando o sistema não pede menos movimento. A peça herói é a fila, não um modelo 3D. A leitura dos dois sites que inspiraram o ritmo, sem copiar o visual, está em [referencias-proprias.md](referencias-proprias.md).

@@ -14,6 +14,7 @@ Leitura das fontes em **22 de novembro de 2026**. A `develop` foi consultada nes
 | [sacola-carrinho.md](sacola-carrinho.md) | Sacola, voo até o ícone e folha de baixo |
 | [checkout.md](checkout.md) | Entrega ou retirada, Pix, pagar agora ou na hora |
 | [referencias-visuais.md](referencias-visuais.md) | Figma, Pinterest, Mobbin, Page Flows e 60fps que abriram; galerias que não abriram |
+| [referencias-proprias.md](referencias-proprias.md) | O que se observa em mateusemth.dev e teamshow.com.br, sem copiar |
 | [prototipos/](prototipos/) | HTML que foi aberto no navegador |
 
 Os protótipos não instalam biblioteca. A hipótese está em [libs-e-animacoes.md](libs-e-animacoes.md): o gesto testado cabe em CSS e na Web Animations API.

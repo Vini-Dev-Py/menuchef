@@ -14,6 +14,8 @@
       --line: #E7E0D6;
     }
     * { box-sizing: border-box; }
+    html, body { overflow-x: clip; }
+    :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
     body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); }
     header { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 16px; }
     h1 { font-size: 20px; margin: 0; }

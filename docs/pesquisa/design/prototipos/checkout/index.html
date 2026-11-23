@@ -14,6 +14,8 @@
       --line: #E7E0D6;
     }
     * { box-sizing: border-box; }
+    html, body { overflow-x: clip; }
+    :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
     body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); }
     main { max-width: 520px; margin: 0 auto; padding: 16px 16px 32px; }
     ol { display: flex; gap: 8px; padding: 0; margin: 0 0 16px; list-style: none; }
